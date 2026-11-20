@@ -468,10 +468,12 @@ FOOTER = """<footer id="contact" class="contact" data-rail="Contact">
 </div>
 </footer>"""
 
-CHAT = """<div class="chat">
+MARK = """<span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="mark-fill" d="M18 2H62V46L46 62H2V18Z"/><path fill="currentColor" fill-rule="evenodd" d="M18 2H62V46L46 62H2V18Z M19.08 4.6H59.4V44.92L44.92 59.4H4.6V19.08Z"/></svg><span>MA</span></span>"""
+
+CHAT = f"""<div class="chat">
 <section class="chat-panel" id="chat-panel" hidden>
 <header class="chat-head">
-<span class="mark" aria-hidden="true">MA</span>
+{MARK}
 <div>
 <p class="chat-name">Muhammad Adil</p>
 <p class="status"><span class="pulse" aria-hidden="true"></span> Open to remote</p>
@@ -523,7 +525,7 @@ def page(path, title, description, body, current=None, tone=None):
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{description}">
 <meta property="og:type" content="website">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -535,7 +537,7 @@ def page(path, title, description, body, current=None, tone=None):
 <div class="read-bar" aria-hidden="true"></div>
 <header class="site-header">
 <div class="wrap bar">
-<a class="brand" href="/"><span class="mark" aria-hidden="true">MA</span><span>Muhammad Adil</span></a>
+<a class="brand" href="/">{MARK}<span class="brand-copy"><span class="brand-name">Muhammad Adil</span><span class="brand-role">Senior Backend Developer</span></span></a>
 <nav aria-label="Main">{nav(current)}</nav>
 <div class="tools"><div class="lang" data-no-i18n><button class="lang-toggle" type="button" data-lang-toggle aria-expanded="false" aria-controls="lang-menu" aria-label="Language"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h16M12 4c2.2 2.4 3.3 5.1 3.3 8s-1.1 5.6-3.3 8c-2.2-2.4-3.3-5.1-3.3-8s1.1-5.6 3.3-8z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span data-lang-code>EN</span></button><div class="lang-menu" id="lang-menu" hidden><button type="button" data-lang="en" class="is-current">English<span>EN</span></button><button type="button" data-lang="ar">العربية<span>AR</span></button><button type="button" data-lang="fr">Français<span>FR</span></button><button type="button" data-lang="nl">Nederlands<span>NL</span></button><button type="button" data-lang="ja">日本語<span>JA</span></button></div></div>{TOGGLE}</div>
 </div>

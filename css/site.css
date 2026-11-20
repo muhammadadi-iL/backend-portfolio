@@ -154,23 +154,72 @@ img { max-width: 100%; height: auto; display: block; }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.72rem;
   margin-inline-end: auto;
-  font-weight: 600;
+  min-width: 0;
+  color: var(--ink);
   text-decoration: none;
 }
 
 .mark {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 8px;
-  background: linear-gradient(160deg, #b08cff, var(--accent-strong));
-  color: #fff;
+  width: 2.65rem;
+  height: 2.65rem;
+  flex: none;
+  color: var(--accent);
+}
+
+.mark svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mark-fill {
+  fill: color-mix(in srgb, var(--accent) 28%, var(--bg));
+}
+
+.mark span {
+  position: relative;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.16rem;
+  min-width: 0;
+}
+
+.brand-name {
+  font-size: 1.18rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.brand-role {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+html[lang="ar"] .brand-role,
+html[lang="ja"] .brand-role {
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 .site-header nav { display: flex; gap: 1.25rem; }
@@ -897,16 +946,9 @@ body.page-about::after {
   height: auto;
   display: block;
   border-radius: 22px;
-  border: 5px solid #f6f3ff;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.45),
-    0 18px 40px rgba(13, 11, 28, 0.32);
-}
-:root[data-theme="light"] .about-photo {
-  border-color: #ffffff;
-  box-shadow:
-    0 0 0 1px var(--line),
-    0 16px 34px rgba(23, 20, 39, 0.1);
+  border: 2px solid var(--surface);
+  outline: 1px solid var(--line);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 .about-copy { display: grid; justify-items: start; }
 .about-copy .lead { max-width: 40rem; }
@@ -1206,10 +1248,14 @@ html:has(.cv-dialog[open]) { overflow: hidden; }
 }
 
 @media (max-width: 27rem) {
-  .brand span:last-child { display: none; }
+  .brand { gap: 0.55rem; }
+  .mark { width: 2.35rem; height: 2.35rem; }
+  .brand-name { font-size: 1.02rem; }
+  .brand-role { font-size: 0.54rem; letter-spacing: 0.06em; }
 }
 
 @media (max-width: 24rem) {
+  .brand-role { display: none; }
   .site-header nav a { font-size: 0.86rem; }
   .lang-toggle { padding-inline: 0.65rem; font-size: 0.84rem; }
 }
@@ -1361,7 +1407,8 @@ html:has(.cv-dialog[open]) { overflow: hidden; }
 }
 .chat-panel[hidden] { display: none; }
 .chat-head { display: grid; grid-template-columns: auto 1fr auto auto; gap: 0.65rem; align-items: start; }
-.chat-head .mark { background: linear-gradient(160deg, #b08cff, var(--accent-strong)); color: #fff; }
+.chat-head .mark { width: 2.35rem; height: 2.35rem; }
+.chat-head .mark span { font-size: 0.64rem; }
 .chat-name { margin: 0; font-weight: 600; }
 .chat-head .status { margin-top: 0.15rem; color: var(--accent); }
 .chat-time { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.82rem; line-height: 1.35; }
