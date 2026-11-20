@@ -537,7 +537,7 @@ def page(path, title, description, body, current=None, tone=None):
 <div class="wrap bar">
 <a class="brand" href="/"><span class="mark" aria-hidden="true">MA</span><span>Muhammad Adil</span></a>
 <nav aria-label="Main">{nav(current)}</nav>
-<div class="tools"><div class="lang" data-no-i18n><button class="lang-toggle" type="button" data-lang-toggle aria-expanded="false" aria-controls="lang-menu" aria-label="Language"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h16M12 4c2.2 2.4 3.3 5.1 3.3 8s-1.1 5.6-3.3 8c-2.2-2.4-3.3-5.1-3.3-8s1.1-5.6 3.3-8z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="lang-menu" id="lang-menu" hidden><button type="button" data-lang="en" class="is-current">English<span>EN</span></button><button type="button" data-lang="ar">العربية<span>AR</span></button><button type="button" data-lang="fr">Français<span>FR</span></button><button type="button" data-lang="nl">Nederlands<span>NL</span></button><button type="button" data-lang="ja">日本語<span>JA</span></button></div></div>{TOGGLE}</div>
+<div class="tools"><div class="lang" data-no-i18n><button class="lang-toggle" type="button" data-lang-toggle aria-expanded="false" aria-controls="lang-menu" aria-label="Language"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h16M12 4c2.2 2.4 3.3 5.1 3.3 8s-1.1 5.6-3.3 8c-2.2-2.4-3.3-5.1-3.3-8s1.1-5.6 3.3-8z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span data-lang-code>EN</span></button><div class="lang-menu" id="lang-menu" hidden><button type="button" data-lang="en" class="is-current">English<span>EN</span></button><button type="button" data-lang="ar">العربية<span>AR</span></button><button type="button" data-lang="fr">Français<span>FR</span></button><button type="button" data-lang="nl">Nederlands<span>NL</span></button><button type="button" data-lang="ja">日本語<span>JA</span></button></div></div>{TOGGLE}</div>
 </div>
 </header>
 <main id="main">
@@ -578,11 +578,11 @@ def home():
 <div class="hero-copy">
 <h1>Backends where money, state and concurrency have to be right.</h1>
 <p class="lead">I'm Muhammad Adil. I've worked with PHP and Laravel for more than five years, over four of them professionally, building the server side of marketplaces, booking systems and SaaS platforms: payment flows, wallets, order lifecycles and the architecture that keeps them maintainable.</p>
+</div>
 <div class="actions">
 <a class="btn btn-primary" href="#cases">Read the case studies <span class="arrow" aria-hidden="true">→</span></a>
 <a class="btn" href="/cv/Muhammad-Adil-Resume.pdf" download>Download Resume</a>
 <button type="button" class="btn" data-cv-preview>Preview Resume</button>
-</div>
 </div>
 <aside class="term" data-no-i18n aria-label="Profile">
 <header>

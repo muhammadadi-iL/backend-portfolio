@@ -76,6 +76,9 @@
     var titleKey = norm(root.dataset.enTitle);
     document.title = dict[titleKey] || root.dataset.enTitle;
 
+    document.querySelectorAll("[data-lang-code]").forEach(function (el) {
+      el.textContent = meta.code;
+    });
     document.querySelectorAll("[data-lang]").forEach(function (button) {
       button.classList.toggle("is-current", button.getAttribute("data-lang") === lang);
     });
