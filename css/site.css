@@ -1065,7 +1065,18 @@ body.page-about::after {
 .contact .details { display: grid; align-content: start; gap: 1.25rem; }
 .contact dd { font-size: 1.1rem; }
 .contact dd a { overflow-wrap: anywhere; }
-.contact .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+.contact .links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
+.icon-link {
+  display: inline-grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.icon-link:hover { border-color: var(--accent); color: var(--accent); }
 .fine {
   margin-top: 3rem;
   padding-top: 1.25rem;
