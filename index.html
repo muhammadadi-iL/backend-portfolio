@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Muhammad Adil — Senior Backend Developer</title>
+<meta name="description" content="Senior backend developer (PHP and Laravel). Payment flows, wallets, order lifecycles and the architecture behind marketplaces, booking systems and SaaS platforms.">
+<meta name="theme-color" content="#0c1024">
+<meta property="og:title" content="Muhammad Adil — Senior Backend Developer">
+<meta property="og:description" content="Senior backend developer (PHP and Laravel). Payment flows, wallets, order lifecycles and the architecture behind marketplaces, booking systems and SaaS platforms.">
+<meta property="og:type" content="website">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<script>
+(function () {
+  try {
+    var saved = localStorage.getItem("theme");
+    document.documentElement.dataset.theme = saved === "light" ? "light" : "dark";
+    if (localStorage.getItem("lang") && localStorage.getItem("lang") !== "en") {
+      var lang = localStorage.getItem("lang");
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      document.documentElement.dataset.lang = lang;
+      setTimeout(function () { document.documentElement.classList.add("i18n-ready"); }, 2500);
+    }
+  } catch (e) {
+    document.documentElement.dataset.theme = "dark";
+  }
+})();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="read-bar" aria-hidden="true"></div>
+<header class="site-header">
+<div class="wrap bar">
+<a class="brand" href="/"><span class="mark" aria-hidden="true">MA</span><span>Muhammad Adil</span></a>
+<nav aria-label="Main"><a href="/work/">Work</a><a href="/how-i-ship/">Process</a><a href="/about/">About</a><a class="contact-link" href="#contact">Contact</a></nav>
+<div class="tools"><div class="lang" data-no-i18n><button class="lang-toggle" type="button" data-lang-toggle aria-expanded="false" aria-controls="lang-menu" aria-label="Language"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h16M12 4c2.2 2.4 3.3 5.1 3.3 8s-1.1 5.6-3.3 8c-2.2-2.4-3.3-5.1-3.3-8s1.1-5.6 3.3-8z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="lang-menu" id="lang-menu" hidden><button type="button" data-lang="en" class="is-current">English<span>EN</span></button><button type="button" data-lang="ar">العربية<span>AR</span></button><button type="button" data-lang="fr">Français<span>FR</span></button><button type="button" data-lang="nl">Nederlands<span>NL</span></button><button type="button" data-lang="ja">日本語<span>JA</span></button></div></div><button class="theme-toggle" type="button" aria-label="Switch between light and dark" data-theme-toggle>
+<svg class="sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+<svg class="moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path></svg>
+</button></div>
+</div>
+</header>
+<main id="main">
+
+<section class="hero" id="home" data-rail="Home">
+<div class="wrap">
+<div class="who">
+<img class="avatar" src="/assets/avatar.jpg" alt="Muhammad Adil" width="340" height="340">
+<div>
+<p class="eyebrow">Senior Backend Developer</p>
+<p class="status"><span class="pulse" aria-hidden="true"></span> Open to remote</p>
+</div>
+</div>
+<div class="hero-grid">
+<div class="hero-copy">
+<h1>Backends where money, state and concurrency have to be right.</h1>
+<p class="lead">I'm Muhammad Adil. I've worked with PHP and Laravel for more than five years, over four of them professionally, building the server side of marketplaces, booking systems and SaaS platforms: payment flows, wallets, order lifecycles and the architecture that keeps them maintainable.</p>
+<div class="actions">
+<a class="btn btn-primary" href="#cases">Read the case studies <span class="arrow" aria-hidden="true">→</span></a>
+<a class="btn" href="/cv/Muhammad-Adil-Resume.pdf" download>Download Resume</a>
+<button type="button" class="btn" data-cv-preview>Preview Resume</button>
+</div>
+</div>
+<aside class="term" data-no-i18n aria-label="Profile">
+<header>
+<span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+<span class="term-title">muhammad-adil — zsh</span>
+<span class="term-live"><span class="pulse" aria-hidden="true"></span> Online</span>
+</header>
+<pre><span class="prompt">$</span> whoami   <span>muhammad-adil</span>
+<span class="prompt">$</span> role     <span>senior-backend-developer</span>
+<span class="prompt">$</span> focus    <span>php / laravel / react / vue</span>
+<span class="prompt">$</span> backend  <span>rest-apis / firebase / postgres</span>
+<span class="prompt">$</span> ai       <span>openai / embeddings / gpt</span>
+<span class="prompt">$</span> workflow <span>spec-driven feature packs</span>
+<span class="prompt">$</span> deployment <span>vercel / aws / hostinger / vps / node</span>
+<span class="prompt">$</span> delivered <span>50+ projects</span>
+<span class="prompt">$</span> status   <span>open-to-opportunities</span>
+<span class="prompt">$</span> email    <span>adilm0616@gmail.com</span>
+<span class="prompt">$</span> <i class="term-caret" aria-hidden="true"></i></pre>
+</aside>
+</div>
+<dl class="hero-facts">
+<div><dt>Experience</dt><dd>5+ years</dd></div>
+<div><dt>Delivered</dt><dd>50+ projects</dd></div>
+<div><dt>Focus</dt><dd>PHP / Laravel / React / Vue</dd></div>
+<div><dt>Based in</dt><dd>Karachi, Pakistan</dd></div>
+</dl>
+<a class="scroll-cue" href="#cases">Scroll<span aria-hidden="true"></span></a>
+</div>
+</section>
+<section class="section" id="cases" data-rail="Cases">
+<div class="wrap">
+<div class="section-head">
+<h2>Case studies</h2>
+<p>Five projects, each told as a problem, the decisions I made and what came out of them.</p>
+</div>
+<ol class="case-list"><li>
+<a href="/work/valora/">
+<span class="num mono" aria-hidden="true">01</span>
+<span class="main">
+<span class="domain">Home care operations · 2026</span>
+<span class="title">VALORA — the agents draft, a person approves</span>
+<span class="summary">Home care software where clients, visits, billing and payroll share one record, and AI agents prepare the paperwork for someone to approve.</span>
+<ul class="tags"><li>Laravel 12</li><li>MySQL</li><li>Alpine.js</li><li>Claude</li></ul>
+</span>
+<span class="arrow" aria-hidden="true">→</span>
+</a>
+</li><li>
+<a href="/work/food-link/">
+<span class="num mono" aria-hidden="true">02</span>
+<span class="main">
+<span class="domain">Multi-tenant ordering · 2026</span>
+<span class="title">Food Link — a database for every merchant</span>
+<span class="summary">A multi-tenant ordering platform for restaurants and stores, where creating a new merchant cannot be done in a single transaction.</span>
+<ul class="tags"><li>Laravel 13</li><li>MySQL</li><li>stancl/tenancy</li><li>PHPUnit</li></ul>
+</span>
+<span class="arrow" aria-hidden="true">→</span>
+</a>
+</li><li>
+<a href="/work/msane/">
+<span class="num mono" aria-hidden="true">03</span>
+<span class="main">
+<span class="domain">B2B manufacturing · 2026</span>
+<span class="title">Msane — one cart, many factories</span>
+<span class="summary">A marketplace where a single checkout becomes several orders, and the parts must add up to the total exactly.</span>
+<ul class="tags"><li>Laravel 11</li><li>MySQL</li><li>Sanctum</li><li>PHPUnit</li></ul>
+</span>
+<span class="arrow" aria-hidden="true">→</span>
+</a>
+</li><li>
+<a href="/work/waraq-oman/">
+<span class="num mono" aria-hidden="true">04</span>
+<span class="main">
+<span class="domain">E-commerce payments</span>
+<span class="title">Waraq Oman — the order follows the payment</span>
+<span class="summary">An online store where Amwal Pay has to mark an order paid or failed, and the customer has to hear about it.</span>
+<ul class="tags"><li>Laravel</li><li>JavaScript</li><li>jQuery</li><li>Amwal Pay</li></ul>
+</span>
+<span class="arrow" aria-hidden="true">→</span>
+</a>
+</li><li>
+<a href="/work/alejaar/">
+<span class="num mono" aria-hidden="true">05</span>
+<span class="main">
+<span class="domain">Property operations</span>
+<span class="title">Alejaar — units, tenants and rent in one system</span>
+<span class="summary">A Laravel 11 application for buildings: who is in which unit, what rent is due, and which maintenance request is open.</span>
+<ul class="tags"><li>Laravel 11</li><li>MySQL</li><li>RBAC</li></ul>
+</span>
+<span class="arrow" aria-hidden="true">→</span>
+</a>
+</li></ol>
+</div>
+</section>
+<section class="section" id="more" data-rail="Work">
+<div class="wrap">
+<div class="section-head">
+<h2>More work</h2>
+<p>Two team projects worth a closer look.</p>
+</div>
+<div class="cards">
+<article class="card">
+<header>
+<p class="domain">Multi-vendor local delivery · 2024–2025</p>
+<h3><a href="/work/#thunder">Thunder</a></h3>
+<p class="role muted">Backend developer in a small team</p>
+</header>
+<p>A delivery marketplace with customer, store and driver apps, and an order that moves through 13 states. The distinctive piece is ordering an item the store has not priced yet.</p>
+<p class="highlight-line"><span class="label">What stood out:</span> Negotiating a price inside the chat.</p>
+<ul class="tags"><li>Laravel 9</li><li>MySQL</li><li>Socket.IO</li><li>FCM</li></ul>
+</article>
+<article class="card">
+<header>
+<p class="domain">Academic research services · 2025–2026</p>
+<h3><a href="/work/#mosaed-elbhos">Mosaed Elbhos</a></h3>
+<p class="role muted">Lead backend developer</p>
+</header>
+<p>A live platform connecting researchers with consultants, technicians and institutions. About thirteen request workflows and a course platform share one order lifecycle.</p>
+<p class="highlight-line"><span class="label">What stood out:</span> Many order types, one lifecycle.</p>
+<ul class="tags"><li>Laravel 11</li><li>MySQL</li><li>MyFatoorah</li><li>FCM</li></ul>
+</article>
+<article class="card">
+<header>
+<p class="domain">Virtual leadership learning</p>
+<h3><a href="/work/#experience-accelerator">The Experience Accelerator</a></h3>
+<p class="role muted">Backend developer</p>
+</header>
+<p>A learning platform for leadership practice. It covers behaviour assessment, progress over time, role-based access and feedback workflows.</p>
+<p class="highlight-line"><span class="label">What stood out:</span> Assessment, progress and feedback share one account.</p>
+<ul class="tags"><li>Laravel</li><li>MySQL</li><li>RBAC</li></ul>
+</article>
+<article class="card">
+<header>
+<p class="domain">E-commerce data · Techigator · 2023–2024</p>
+<h3><a href="/work/#data-aggregation">Data aggregation</a></h3>
+<p class="role muted">Backend developer</p>
+</header>
+<p>Crawlers collect product pages, an ETL pipeline loads MySQL, and Pusher and Firebase carry live updates and sign-in. Proxy rotation keeps a blocked address from stopping the run.</p>
+<p class="highlight-line"><span class="label">What stood out:</span> The crawl still lands as rows someone can query.</p>
+<ul class="tags"><li>Laravel</li><li>Scrapy</li><li>Goutte</li><li>MySQL</li><li>Pusher</li><li>Firebase</li></ul>
+</article>
+</div>
+<p class="more"><a href="/work/">All projects <span class="arrow" aria-hidden="true">→</span></a></p>
+</div>
+</section>
+<section class="section" id="ship" data-rail="Process">
+<div class="wrap about-block">
+<div class="section-head">
+<h2>How I ship</h2>
+<p>I built a workflow that turns a Figma file and a business analysis into small feature packs, then has AI agents implement each one under fixed architecture rules. I review every change and own the decisions.</p>
+</div>
+<p class="more"><a href="/how-i-ship/">See the workflow <span class="arrow" aria-hidden="true">→</span></a></p>
+</div>
+</section>
+<section class="section" id="about" data-rail="About">
+<div class="wrap about-block">
+<div class="section-head">
+<h2>About</h2>
+<p>Sole backend developer on most of what you see here, and a former backend team head who led up to 4 developers: reviewing code, mentoring developers and owning delivery.</p>
+</div>
+<p class="more"><a href="/about/">More about how I work <span class="arrow" aria-hidden="true">→</span></a></p>
+</div>
+</section>
+
+</main>
+<footer id="contact" class="contact" data-rail="Contact">
+<div class="wrap">
+<div class="grid">
+<div class="intro">
+<p class="eyebrow">Contact</p>
+<h2>Get in touch</h2>
+<p class="muted">Open to senior backend roles. Email is the fastest way to reach me.</p>
+<div class="btn-row">
+<a class="btn btn-primary" href="https://api.whatsapp.com/send/?phone=923180253146&amp;text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&amp;type=phone_number&amp;app_absent=0" rel="noopener" target="_blank">Message on WhatsApp</a>
+<a class="btn" href="/cv/Muhammad-Adil-Resume.pdf" download>Download Resume (PDF)</a>
+<button type="button" class="btn" data-cv-preview>Preview Resume</button>
+</div>
+</div>
+<dl class="details">
+<div><dt>Email</dt><dd><a href="mailto:adilm0616@gmail.com">adilm0616@gmail.com</a></dd></div>
+<div><dt>Phone</dt><dd><a href="tel:+923180253146">+92 318 0253146</a></dd></div>
+<div><dt>WhatsApp</dt><dd><a href="https://api.whatsapp.com/send/?phone=923180253146&amp;text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&amp;type=phone_number&amp;app_absent=0" rel="noopener" target="_blank">Message on WhatsApp</a></dd></div>
+<div><dt>Elsewhere</dt><dd class="links"><a href="https://github.com/muhammadadi-iL" rel="me noopener" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/muhammad-adil-khan-7274a1243" rel="me noopener" target="_blank">LinkedIn</a></dd></div>
+</dl>
+</div>
+<p class="fine">© 2026 Muhammad Adil · Karachi, Pakistan · Open to remote</p>
+</div>
+</footer>
+<div class="chat">
+<section class="chat-panel" id="chat-panel" hidden>
+<header class="chat-head">
+<span class="mark" aria-hidden="true">MA</span>
+<div>
+<p class="chat-name">Muhammad Adil</p>
+<p class="status"><span class="pulse" aria-hidden="true"></span> Open to remote</p>
+<p class="chat-time">Local time in Karachi, Pakistan: <time data-no-i18n datetime="">00:00</time></p>
+</div>
+<a class="chat-wa" href="https://api.whatsapp.com/send/?phone=923180253146&amp;text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&amp;type=phone_number&amp;app_absent=0" rel="noopener" target="_blank" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.74.46 3.44 1.34 4.94L2 22l5.39-1.4a10.1 10.1 0 0 0 4.65 1.12h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2zm5.76 14.04c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.81-.11-.41-.14-.95-.31-1.63-.61-2.87-1.24-4.74-4.14-4.88-4.33-.14-.19-1.16-1.54-1.16-2.94s.73-2.08 1-2.37c.24-.27.64-.4 1.02-.4.13 0 .24 0 .35.01.31.01.46-.02.7.54.24.6.83 2.06.9 2.21.07.16.12.34.02.54-.1.2-.14.33-.28.51-.14.17-.3.38-.42.51-.14.14-.28.29-.12.55.16.27.7 1.16 1.51 1.88 1.04.92 1.91 1.21 2.2 1.35.27.13.43.11.59-.07.16-.18.68-.79.86-1.06.18-.27.36-.22.6-.13.24.09 1.54.73 1.8.86.27.13.44.2.51.31.06.11.06.64-.18 1.32z"/></svg></a>
+<button type="button" class="chat-close" data-chat-close aria-label="Close">×</button>
+</header>
+<p class="chat-note">An assistant answers from this site. Muhammad reads WhatsApp himself.</p>
+<div class="chat-log" aria-live="polite"></div>
+<form class="chat-form">
+<label for="chat-message">Your message</label>
+<textarea id="chat-message" rows="2"></textarea>
+<div class="chat-actions">
+<button class="chat-send" type="submit">Send</button>
+<a class="chat-handoff" href="https://api.whatsapp.com/send/?phone=923180253146&amp;text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&amp;type=phone_number&amp;app_absent=0" rel="noopener" target="_blank">WhatsApp</a>
+</div>
+</form>
+</section>
+<button class="chat-toggle" type="button" aria-expanded="false" aria-controls="chat-panel" aria-label="Open chat"><svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M7 6.2h15.6a3.4 3.4 0 0 1 3.4 3.4v8.4a3.4 3.4 0 0 1-3.4 3.4h-7.6L9 26.6a1.1 1.1 0 0 1-1.8-.9v-4.3H7a3.4 3.4 0 0 1-3.4-3.4V9.6A3.4 3.4 0 0 1 7 6.2Z"/><circle cx="11.2" cy="14.3" r="1.45" fill="#5b35f0"/><circle cx="16" cy="14.3" r="1.45" fill="#5b35f0"/><circle cx="20.8" cy="14.3" r="1.45" fill="#5b35f0"/></svg></button>
+</div>
+<nav class="rail" aria-label="Sections"></nav>
+<dialog id="cv-preview" class="cv-dialog" aria-labelledby="cv-preview-title">
+<div class="bar">
+<h2 id="cv-preview-title">Resume</h2>
+<a class="btn btn-primary" href="/cv/Muhammad-Adil-Resume.pdf" download>Download PDF</a>
+<button type="button" class="close" data-cv-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg></button>
+</div>
+<iframe class="frame" src="/cv/" title="Muhammad Adil Resume"></iframe>
+</dialog>
+<script src="/js/ar.js"></script>
+<script src="/js/langs.js"></script>
+<script src="/js/site.js"></script>
+</body>
+</html>
