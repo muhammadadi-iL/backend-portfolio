@@ -581,6 +581,7 @@ def page(path, title, description, body, current=None, tone=None):
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{description}">
+<meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0c1024">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{description}">
@@ -1337,7 +1338,7 @@ def js_required():
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>JavaScript is Required — Muhammad Adil</title>
-<meta name="robots" content="noindex">
+<meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0c1024">
 <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1500,20 +1501,11 @@ def privacy():
 
 
 def sitemap():
-    urls = [
-        "/",
-        "/about/",
-        "/how-i-ship/",
-        "/privacy/",
-        "/work/",
-    ] + [f"/work/{case['slug']}/" for case in CASES]
-    locs = "\n".join(f"  <url><loc>https://muhammad-adil-portfolio.vercel.app{url}</loc></url>" for url in urls)
-    # Placeholder host is rewritten after deploy if needed. Relative sitemap is not valid,
-    # so the file is written once the production host is known.
+    # Site is noindex; keep an empty urlset so old sitemap URLs do not list pages.
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        f"{locs}\n</urlset>\n"
+        "</urlset>\n"
     )
     print("sitemap.xml")
 
