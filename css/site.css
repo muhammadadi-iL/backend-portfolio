@@ -45,12 +45,8 @@ html {
 body {
   margin: 0;
   padding-bottom: calc(5.25rem + env(safe-area-inset-bottom));
-  background:
-    radial-gradient(980px 560px at 88% -8%, rgba(140, 92, 255, 0.34), transparent 58%),
-    radial-gradient(760px 520px at -12% 8%, rgba(92, 48, 196, 0.28), transparent 52%),
-    radial-gradient(640px 420px at 50% 110%, rgba(124, 77, 255, 0.12), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+  isolation: isolate;
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 1.0625rem;
@@ -88,6 +84,21 @@ a:hover { text-decoration-color: currentColor; }
 }
 
 img { max-width: 100%; height: auto; display: block; }
+
+.aurora {
+  position: fixed;
+  inset: -12%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(980px 560px at 78% 6%, rgba(140, 92, 255, 0.34), transparent 58%),
+    radial-gradient(760px 520px at 4% 18%, rgba(92, 48, 196, 0.28), transparent 52%),
+    radial-gradient(640px 420px at 54% 92%, rgba(124, 77, 255, 0.16), transparent 60%);
+  animation: glow-drift 28s ease-in-out infinite alternate;
+}
+@keyframes glow-drift {
+  to { transform: translate3d(-3%, 2.5%, 0) scale(1.06); }
+}
 
 .wrap {
   width: 100%;
@@ -356,16 +367,21 @@ html[lang="ar"] .num {
 
 .hero {
   position: relative;
+  overflow: hidden;
   padding-block: clamp(3.5rem, 11vw, 7.5rem) clamp(3rem, 8vw, 5.5rem);
 }
 .hero::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -22px;
   background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 16%, transparent) 1px, transparent 1.2px);
   background-size: 22px 22px;
   mask-image: linear-gradient(to bottom, #000 0%, transparent 88%);
   pointer-events: none;
+  animation: dots 18s linear infinite;
+}
+@keyframes dots {
+  to { background-position: 22px 22px; }
 }
 .hero .wrap { position: relative; display: grid; justify-items: start; gap: 1.25rem; }
 .hero .wrap > * {
@@ -387,12 +403,24 @@ html[lang="ar"] .num {
   letter-spacing: 0.02em;
 }
 .pulse {
-  width: 0.48rem;
-  height: 0.48rem;
+  position: relative;
+  display: block;
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
   background: #3ddc97;
-  box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.55);
-  animation: ping 2.4s ease-out infinite;
+  box-shadow: 0 0 0 3px rgba(61, 220, 151, 0.28);
+  animation: pulse-core 1.6s ease-in-out infinite;
+}
+.pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #3ddc97;
+  pointer-events: none;
+  animation: ping 1.6s ease-out infinite;
 }
 .read-bar {
   position: fixed;
@@ -407,7 +435,11 @@ html[lang="ar"] .num {
   pointer-events: none;
 }
 html[dir="rtl"] .read-bar { transform-origin: right center; }
-.reveal.is-in { animation: fade-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.reveal {
+  animation: fade-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-play-state: paused;
+}
+.reveal.is-in { animation-play-state: running; }
 @keyframes rise {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
@@ -417,7 +449,12 @@ html[dir="rtl"] .read-bar { transform-origin: right center; }
   to { opacity: 1; }
 }
 @keyframes ping {
-  70% { box-shadow: 0 0 0 7px transparent; }
+  0% { opacity: 0.75; transform: scale(1); }
+  75%, 100% { opacity: 0; transform: scale(2.5); }
+}
+@keyframes pulse-core {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.72); }
 }
 
 .avatar {
@@ -887,6 +924,7 @@ body.page-work::before {
     transparent 0 55px,
     color-mix(in srgb, var(--accent) 16%, transparent) 55px 56px
   );
+  animation: scan 16s linear infinite;
   mask-image: linear-gradient(to right, transparent 8%, #000 34%, #000 70%, transparent 96%),
     linear-gradient(to bottom, #000 0%, transparent 72%);
   -webkit-mask-image: linear-gradient(to right, transparent 8%, #000 34%, #000 70%, transparent 96%),
@@ -900,10 +938,17 @@ body.page-work::after {
   width: 8.5rem;
   height: 8.5rem;
   border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
-  transform: rotate(45deg);
+  animation: diamond 32s linear infinite;
+}
+@keyframes scan {
+  to { background-position: 0 56px; }
+}
+@keyframes diamond {
+  from { transform: rotate(45deg); }
+  to { transform: rotate(405deg); }
 }
 body.page-process::before {
-  inset: 0;
+  inset: -40px;
   background:
     radial-gradient(520px 280px at 0% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
     repeating-linear-gradient(
@@ -913,6 +958,10 @@ body.page-process::before {
     );
   mask-image: linear-gradient(to bottom, #000 0%, transparent 64%);
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 64%);
+  animation: hatch 22s ease-in-out infinite alternate;
+}
+@keyframes hatch {
+  to { background-position: 0 0, 36px 22px; }
 }
 body.page-about::before {
   top: 6.5rem;
@@ -922,6 +971,7 @@ body.page-about::before {
   border-radius: 50%;
   background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 68%);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 32%, transparent);
+  animation: ring 11s ease-in-out infinite;
 }
 body.page-about::after {
   top: 9.5rem;
@@ -930,6 +980,10 @@ body.page-about::after {
   height: min(18rem, 34vw);
   border-radius: 50%;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+  animation: ring 15s ease-in-out infinite reverse;
+}
+@keyframes ring {
+  50% { transform: scale(1.045); }
 }
 
 .page-head { padding-block: clamp(2.75rem, 7vw, 4.5rem) 0.5rem; }
@@ -1218,6 +1272,12 @@ html:has(.cv-dialog[open]) { overflow: hidden; }
   }
   .site-header nav a { font-size: 0.95rem; }
   .principles, .skill-grid { grid-template-columns: 1fr; }
+  body.page-work::after {
+    top: 4.75rem;
+    inset-inline-end: -2.4rem;
+    width: 6rem;
+    height: 6rem;
+  }
 }
 
 @media (max-width: 34rem) {

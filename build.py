@@ -533,6 +533,7 @@ def page(path, title, description, body, current=None, tone=None):
 {HEAD_SCRIPT}
 </head>
 <body{body_attr}>
+<div class="aurora" aria-hidden="true"></div>
 <a class="skip" href="#main">Skip to content</a>
 <div class="read-bar" aria-hidden="true"></div>
 <header class="site-header">

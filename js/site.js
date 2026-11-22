@@ -246,6 +246,13 @@
       if (!panel || !toggle) return;
       panel.hidden = !open;
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        chat.querySelectorAll(".pulse").forEach(function (dot) {
+          dot.style.animation = "none";
+          void dot.offsetWidth;
+          dot.style.animation = "";
+        });
+      }
       if (open && log && !greeted) {
         greeted = true;
         addLine(t("Ask about Muhammad's work, his stack, or how to reach him."), "from-bot");
@@ -340,20 +347,36 @@
 
   if (root.dataset.lang) applyLang(root.dataset.lang);
 
-  if (!reduce && "IntersectionObserver" in window) {
+  if (!reduce) {
     var nodes = document.querySelectorAll(".case-list > li, .card, .principles article, .page-head, .job, .section-head");
+    var waiting = [];
     nodes.forEach(function (node, index) {
       node.classList.add("reveal");
       node.style.animationDelay = (index % 5) * 45 + "ms";
+      waiting.push(node);
     });
-    var seen = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        seen.unobserve(entry.target);
+    var revealTick = false;
+    function revealVisible() {
+      revealTick = false;
+      if (!waiting.length) return;
+      var edge = window.innerHeight * 0.96;
+      waiting = waiting.filter(function (node) {
+        var rect = node.getBoundingClientRect();
+        if (rect.top < edge && rect.bottom > 0) {
+          node.classList.add("is-in");
+          return false;
+        }
+        return true;
       });
-    }, { threshold: 0.14, rootMargin: "0px 0px -6% 0px" });
-    nodes.forEach(function (node) { seen.observe(node); });
+    }
+    function queueReveal() {
+      if (revealTick) return;
+      revealTick = true;
+      requestAnimationFrame(revealVisible);
+    }
+    queueReveal();
+    window.addEventListener("scroll", queueReveal, { passive: true });
+    window.addEventListener("resize", queueReveal);
   }
 
   var dialog = document.querySelector("#cv-preview");
