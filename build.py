@@ -1413,7 +1413,7 @@ def privacy():
 </nav>
 <article class="prose policy">
 <h2 id="overview">1. Overview and purpose</h2>
-<p>This website, at <a href="https://muhammad-adil-portfolio.vercel.app/">muhammad-adil-portfolio.vercel.app</a> and <a href="https://adil-portfolio-sigma.vercel.app/">adil-portfolio-sigma.vercel.app</a>, is the portfolio of Muhammad Adil, a senior backend developer in Karachi, Pakistan.</p>
+<p>This website, at <a href="https://muhammad-adil-portfolio.vercel.app/">muhammad-adil-portfolio.vercel.app</a>, is the portfolio of Muhammad Adil, a senior backend developer in Karachi, Pakistan.</p>
 <p>I do not sell personal information, run advertising, or follow people across other websites. This policy describes the limited information the site processes when you read it, use the chat, or write to me directly.</p>
 <h2 id="collected">2. Information collected</h2>
 <h3>A. Email, phone and WhatsApp links</h3>

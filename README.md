@@ -6,8 +6,7 @@ The public site is the work: case studies, how he ships, background, resume, and
 
 | | |
 | --- | --- |
-| Live site | https://muhammad-adil-portfolio.vercel.app |
-| Alternate alias | https://adil-portfolio-sigma.vercel.app |
+| Official site | https://muhammad-adil-portfolio.vercel.app |
 | Admin | `/admin/` (password required, noindex) |
 | Resume | [/cv/](https://muhammad-adil-portfolio.vercel.app/cv/) |
 
