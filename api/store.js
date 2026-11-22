@@ -145,24 +145,29 @@ async function readRows(kind) {
   return (await readBlob(PATHS[kind])).rows;
 }
 
-async function appendRowNow(kind, record) {
+async function appendRowsNow(kind, records) {
   if (!PATHS[kind]) throw new Error("unknown store");
+  if (!records.length) return;
   if (!token()) {
-    writeFileRows(kind, readFileRows(kind).concat([record]).slice(-CAP));
+    writeFileRows(kind, readFileRows(kind).concat(records).slice(-CAP));
     return;
   }
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const current = await readBlob(PATHS[kind]);
-    const wrote = await writeBlob(PATHS[kind], current.rows.concat([record]).slice(-CAP), current.etag);
+    const wrote = await writeBlob(PATHS[kind], current.rows.concat(records).slice(-CAP), current.etag);
     if (wrote === "ok") return;
   }
   throw new Error("blob write conflict");
 }
 
-function appendRow(kind, record) {
-  const run = chain.then(() => appendRowNow(kind, record));
+function appendRows(kind, records) {
+  const run = chain.then(() => appendRowsNow(kind, records));
   chain = run.catch(() => {});
   return run;
 }
 
-module.exports = { readRows, appendRow };
+function appendRow(kind, record) {
+  return appendRows(kind, [record]);
+}
+
+module.exports = { readRows, appendRow, appendRows };

@@ -150,6 +150,31 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  const saved = {
+    sessionId: req.body && req.body.sessionId,
+    path: req.body && req.body.path,
+    contact: req.body && req.body.contact,
+    context: req.body && req.body.context,
+  };
+  if (req.body && req.body.saveReply === true) {
+    const shown = String((req.body && req.body.reply) || "").trim().slice(0, 1200);
+    const asked = String((req.body && req.body.userText) || "").trim().slice(0, 1200);
+    if ((!shown && !asked) || !saved.sessionId) {
+      res.statusCode = 400;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ error: "message required" }));
+      return;
+    }
+    const lines = [];
+    if (asked) lines.push(Object.assign({ role: "user", text: asked }, saved));
+    if (shown) lines.push(Object.assign({ role: "model", text: shown }, saved));
+    await chats.appendMany(lines);
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ ok: true }));
+    return;
+  }
+
   const contents = readMessages(req.body);
   const last = contents[contents.length - 1];
   if (!last || last.role !== "user") {
@@ -158,14 +183,6 @@ module.exports = async function handler(req, res) {
     res.end(JSON.stringify({ error: "message required" }));
     return;
   }
-
-  const saved = {
-    sessionId: req.body && req.body.sessionId,
-    path: req.body && req.body.path,
-    contact: req.body && req.body.contact,
-    context: req.body && req.body.context,
-  };
-  await chats.append(Object.assign({ role: "user", text: last.parts[0].text }, saved));
 
   const key = process.env.GEMINI_API_KEY;
   if (!key) {
@@ -185,7 +202,10 @@ module.exports = async function handler(req, res) {
   }
 
   const text = reply.slice(0, 1200);
-  await chats.append(Object.assign({ role: "model", text: text }, saved));
+  await chats.appendMany([
+    Object.assign({ role: "user", text: last.parts[0].text }, saved),
+    Object.assign({ role: "model", text: text }, saved),
+  ]);
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify({ reply: text }));

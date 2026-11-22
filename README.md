@@ -1,35 +1,49 @@
-# Backend Portfolio
+# Muhammad Adil — Portfolio
 
-Portfolio of Muhammad Adil, a senior backend developer. The public site is the case studies, the shipping workflow, the background, and the ways to reach him.
+Public portfolio and private admin for **Muhammad Adil**, a senior backend developer in Karachi, open to remote roles.
 
-Live site: https://muhammad-adil-portfolio.vercel.app
+The public site is the work: case studies, how he ships, background, resume, and ways to reach him. The admin dashboard is a signed-in panel for visits, locations, and saved chats. It is not part of the public navigation and is blocked from crawlers.
 
-The work is PHP and Laravel: payment flows, wallets, order lifecycles, and the architecture behind marketplaces, booking systems, and SaaS platforms. He is based in Karachi and open to remote senior backend roles.
+| | |
+| --- | --- |
+| Live site | https://muhammad-adil-portfolio.vercel.app |
+| Alternate alias | https://adil-portfolio-sigma.vercel.app |
+| Admin | `/admin/` (password required, noindex) |
+| Resume | [/cv/](https://muhammad-adil-portfolio.vercel.app/cv/) |
+
+Stack on the projects: PHP, Laravel, payments, wallets, order lifecycles, and the architecture behind marketplaces, booking systems, and SaaS platforms.
+
+---
 
 ## Contact
 
 | | |
 | --- | --- |
-| Email | adilm0616@gmail.com |
-| Phone and WhatsApp | +92 318 0253146 |
+| Email | [adilm0616@gmail.com](mailto:adilm0616@gmail.com) |
+| Phone / WhatsApp | [+92 318 0253146](https://api.whatsapp.com/send/?phone=923180253146&text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&type=phone_number&app_absent=0) |
 | GitHub | https://github.com/muhammadadi-iL |
 | LinkedIn | https://www.linkedin.com/in/muhammad-adil-khan-7274a1243 |
-| Resume | [/cv/](https://muhammad-adil-portfolio.vercel.app/cv/) |
 
-WhatsApp opens with this line already filled in: "Hello Muhammad, I saw your portfolio and wanted to reach you."
+WhatsApp opens with: *Hello Muhammad, I saw your portfolio and wanted to reach you.*
 
-## Pages
+---
 
-| Path | What a visitor gets |
+## Public site
+
+### Pages
+
+| Path | Purpose |
 | --- | --- |
-| `/` | Introduction, terminal card, four facts, the first five case studies, shorter work, how he ships, and contact |
-| `/work/` | All ten case studies, then shorter write-ups, then earlier work as one line each |
-| `/work/<slug>/` | One case study: the problem, the role, the decisions, and the outcome |
-| `/how-i-ship/` | The spec-driven workflow used with coding agents |
-| `/about/` | Background, how he works, experience, education, and skills |
-| `/cv/` | Resume in the browser, plus the PDF download |
+| `/` | Hero, terminal card, facts, five lead case studies, shorter work, how he ships, contact |
+| `/work/` | All case studies, shorter write-ups, earlier work in one line each |
+| `/work/<slug>/` | One case study: problem, role, decisions, outcome |
+| `/how-i-ship/` | Spec-driven workflow used with coding agents |
+| `/about/` | Background, how he works, experience, education, skills |
+| `/privacy/` | How visits, cookies, and chats are handled |
+| `/cv/` | Resume in the browser and PDF download |
+| `/javascript-required/` | Fallback when JavaScript is off |
 
-The home page lists five studies. The work page lists all ten.
+### Case studies
 
 | | Study | Path |
 | --- | --- | --- |
@@ -44,131 +58,172 @@ The home page lists five studies. The work page lists all ten.
 | 09 | ASH Shop — Arabic perfumes, in Arabic and English | `/work/ash-shop/` |
 | 10 | Christian Ashram — retreats, stories, and a way to give | `/work/christian-ashram/` |
 
-## How the repository is organised
+Home lists the first five. `/work/` lists all ten.
 
-`build.py` is the source for page copy. It writes the HTML files and `sitemap.xml`. CSS and JavaScript are not generated. The resume page and the PDF are maintained by hand.
+### Languages
+
+English is the source in `build.py`. Visitors pick a language in the header; the choice is stored in the browser and applied before paint.
+
+| Code | Language |
+| --- | --- |
+| EN | English (source) |
+| AR | Arabic (RTL) |
+| FR | French |
+| NL | Dutch |
+| JA | Japanese |
+
+Product names, tech names, email, and phone stay as written. The hero terminal stays LTR in every language.
+
+### On-site chat
+
+The chat panel asks about the work, the stack, or how to reach Muhammad.
+
+- Visitor leaves a name (and optional phone/email), then messages.
+- After the first successful send, contact fields hide; bubbles show the visitor name and **Muhammad Adil**.
+- `POST /api/chat` sends recent turns plus contact. Answers stay within facts published on the site. Missing facts are not invented; WhatsApp is offered instead.
+- Replies use `GEMINI_API_KEY` on the server when available; otherwise short local answers for the same public facts.
+- Each exchange is saved (visitor line and reply together) for the admin Chats view. Chat rows do not store IP addresses.
+
+### Visits and privacy
+
+With consent, the site records visits (path, approximate location from IP, device). Cookie choices and the privacy policy are on `/privacy/`. A once-a-day reCAPTCHA gate runs when keys are configured (disabled on localhost).
+
+---
+
+## Admin dashboard
+
+Path: **`/admin/`** — English only, `noindex`, disallowed in `robots.txt`.
+
+Sign-in uses `ADMIN_PASSWORD`. A successful login sets an **HttpOnly** session cookie (not the password itself). The session lasts thirty days and refreshes while the dashboard is used. **Sign out** clears it.
+
+### Tabs
+
+| Tab | What it shows |
+| --- | --- |
+| Overview | Counts and charts for visits, IPs, locations, chats, pages, contacts |
+| Activity | Merged visit and chat activity, newest first, paginated |
+| Visits | Visit log with detail |
+| IP addresses | Grouped by IP |
+| Locations | Grouped by place |
+| Chats | Threads with contact fields and a scrollable conversation |
+
+The UI follows a dark dashboard look (black surfaces, gray borders, monochrome mark). Public violet branding is unchanged.
+
+### Data
+
+| Store | Cap | Notes |
+| --- | --- | --- |
+| Visits | Latest 500 | Private blob when `BLOB_READ_WRITE_TOKEN` is set; otherwise local `data/` |
+| Chats | Latest 500 | Same store; visitor and model lines written in one append |
+
+`GET /api/admin` needs the session cookie. `GET /api/visit` and `GET /api/chats` are localhost-only in preview; they are not public production endpoints.
+
+---
+
+## Repository layout
+
+`build.py` is the source for public page copy. It writes HTML and `sitemap.xml`. CSS, JavaScript, `api/`, and `admin/` are hand-maintained.
 
 | Path | Role |
 | --- | --- |
-| `build.py` | Page copy, case studies, and the HTML generator |
-| `index.html`, `about/`, `work/`, `how-i-ship/` | Generated HTML. Commit these after a rebuild |
-| `css/site.css` | Theme, layout, motion, and the responsive rules |
-| `js/site.js` | Language switch, theme, section rail, and the chat panel |
-| `js/ar.js` | Arabic for the published pages |
-| `js/langs.js` | French, Dutch, and Japanese |
-| `api/chat.js` | Vercel serverless route for the on-site assistant |
-| `scripts/preview.cjs` | Local server. Serves the site and `POST /api/chat` |
-| `scripts/print-cv.mjs` | Rebuilds `cv/Muhammad-Adil-Resume.pdf` from `cv/index.html` |
-| `cv/index.html` | Resume page. Not produced by `build.py` |
-| `cv/Muhammad-Adil-Resume.pdf` | One-page resume |
-| `assets/` | Portrait, cursor, and other images |
-| `sitemap.xml` | Generated with the HTML |
+| `build.py` | Page copy, case studies, HTML generator |
+| `index.html`, `about/`, `work/`, `how-i-ship/`, `privacy/` | Generated (or privacy) HTML — commit after rebuild when generated |
+| `css/site.css` | Public theme, layout, chat, motion |
+| `css/admin.css` | Admin dashboard only |
+| `js/site.js` | Language, theme, rail, chat, visits, captcha helpers |
+| `js/admin.js` | Admin dashboard controller |
+| `js/ar.js`, `js/langs.js` | Translations |
+| `api/chat.js` | Chat assistant + save path |
+| `api/chats.js` | Chat log helpers / localhost read |
+| `api/visit.js` | Visit logging |
+| `api/admin.js` | Sign-in, session, dashboard data |
+| `api/captcha.js` | reCAPTCHA availability |
+| `api/store.js` | Private blob / local file store |
+| `admin/` | Dashboard HTML and mark |
+| `scripts/preview.cjs` | Local server for static files and `/api/*` |
+| `scripts/print-cv.mjs` | Rebuilds the resume PDF |
+| `cv/` | Resume page and PDF (hand-maintained) |
+| `assets/` | Portrait, cursor, images |
+| `favicon.svg` | Public favicon (also used as site mark) |
+| `sitemap.xml`, `robots.txt` | SEO and crawl rules |
 
-Ignored on purpose:
+Kept out of git and deploys:
 
-| Path | Why it stays out |
+| Path | Why |
 | --- | --- |
-| `.env`, `.env.*` | Holds `GEMINI_API_KEY` |
-| `.vercel/` | Local link to the Vercel project |
+| `.env`, `.env.*` | Secrets |
+| `.vercel/` | Local Vercel link |
+| `data/visits.jsonl`, `data/chats.jsonl` | Local inbox copies |
 | `.idea/` | Editor settings |
 
-`.vercelignore` also excludes those paths, plus `.git`, so a deploy cannot publish the key at `/.env`.
+---
 
-## Editing
+## Local development
 
-Change copy in `build.py`, then regenerate the HTML before committing:
-
-```bash
-python3 build.py
-```
-
-`build.py` uses only the Python standard library. It rewrites:
-
-- `index.html`
-- `about/index.html`
-- `how-i-ship/index.html`
-- `work/index.html` and each `work/<slug>/index.html`
-- `sitemap.xml`
-
-Edit `css/site.css`, `js/site.js`, `js/ar.js`, and `js/langs.js` directly. Those files are served as they are. A CSS or JavaScript change does not need `build.py`.
-
-Edit `cv/index.html` by hand. Rebuild the PDF only when the resume copy changes:
-
-```bash
-node scripts/print-cv.mjs
-```
-
-That script needs Google Chrome on macOS. The PDF is one custom-height page.
-
-## Languages
-
-English is the source written in `build.py`. The visitor picks a language from the header. The choice is saved in `localStorage` and applied before the next paint.
-
-| Code | Language | Coverage |
-| --- | --- | --- |
-| EN | English | Source |
-| AR | Arabic | Published pages, and the page direction becomes right to left |
-| FR | French | The same visible strings as the other translations |
-| NL | Dutch | The same visible strings as the other translations |
-| JA | Japanese | The same visible strings as the other translations |
-
-The header button shows the active code: EN, AR, FR, NL, or JA. The menu lists the language name and the same code.
-
-The terminal card in the hero stays left to right in every language, including Arabic. Product names, technology names, the email address, and the phone number stay as written.
-
-## Chat
-
-The chat button opens a panel on the site. The greeting asks about the work, the stack, or how to reach Muhammad.
-
-A message is sent as `POST /api/chat` with the last eight turns and the current site language. `api/chat.js` answers only from the facts published on the site. If a fact is not there, it says so and points the visitor to WhatsApp. It does not invent employers, dates, numbers, or project details.
-
-The route reads `GEMINI_API_KEY` on the server. The key is not in the HTML, the JavaScript, or this repository. If the route is unavailable, the panel falls back to short answers for the same public facts.
-
-Messages are kept in the browser tab only. They are not written to a database or to `localStorage`. A refresh clears the panel.
-
-## Local preview
-
-Python 3 and Node.js are enough for the site.
+Needs Python 3 and Node.js.
 
 ```bash
 python3 build.py
 node scripts/preview.cjs
 ```
 
-Open http://127.0.0.1:8777/. The server listens on `127.0.0.1` and port `8777` unless `PORT` is set.
+Open http://127.0.0.1:8777/ — listens on `127.0.0.1:8777` unless `PORT` is set.
 
-Create `.env` in the project root when you want the assistant to answer through the API:
+Optional root `.env` (never commit):
 
 ```bash
-GEMINI_API_KEY=your-key
+GEMINI_API_KEY=
+ADMIN_PASSWORD=
+BLOB_READ_WRITE_TOKEN=
+RECAPTCHA_SITE_KEY=
+RECAPTCHA_SECRET_KEY=
 ```
 
-`scripts/preview.cjs` loads that file into the process environment and refuses any URL whose path contains a dotfile, so `/.env` returns 404. Without the key, the chat panel still opens and uses the short public answers.
+- Without `GEMINI_API_KEY`, chat still works with local public-fact answers.
+- Without blob token, visits and chats write under `data/` (gitignored).
+- Preview loads `.env` into the process and blocks dotfile URLs, so `/.env` is not served.
+- After changing any `api/*.js` file, restart the preview process so Node picks up the new module.
 
-A plain Python static server cannot run `/api/chat`. Use `scripts/preview.cjs` for that.
+Resume PDF (macOS + Chrome):
+
+```bash
+node scripts/print-cv.mjs
+```
+
+---
+
+## Editing the public site
+
+1. Change copy in `build.py`.
+2. Run `python3 build.py`.
+3. Commit the generator and the regenerated HTML together.
+
+Edit `css/site.css`, `js/site.js`, and the language files directly — no rebuild required.
+
+If a visible English sentence changes, update `js/ar.js` and the FR/NL/JA maps in `js/langs.js` so translations stay aligned.
+
+Do not hand-edit generated HTML as the source of truth. Do not invent employers, dates, counts, or project details that are not already on the site.
+
+---
 
 ## Deploy
 
-The Vercel project is connected to this repository. A push to `main` deploys production.
-
-There is no Vercel build command. The HTML committed in the repository is what production serves. After a copy change:
+The Vercel project serves the committed static files. There is no separate build command on Vercel for the HTML.
 
 ```bash
-python3 build.py
-git add index.html about how-i-ship work sitemap.xml
+python3 build.py   # when copy changed
+git add …
 git commit
 git push origin main
 ```
 
-CSS and JavaScript can be committed without running `build.py`.
+Set secrets on the Vercel project (Production / Preview as needed): `GEMINI_API_KEY`, `ADMIN_PASSWORD`, `BLOB_READ_WRITE_TOKEN`, and reCAPTCHA keys when the gate should run live. Never put secrets in client code, commits, or pull requests.
 
-`GEMINI_API_KEY` is set on the Vercel project for Production, Preview, and Development. It is a secret there. Do not put the key in a commit, in client-side code, or in a pull request.
+---
 
-Production aliases:
+## Guardrails
 
-- https://muhammad-adil-portfolio.vercel.app
-- https://adil-portfolio-sigma.vercel.app
-
-## What a change should not do
-
-Do not commit `.env`. Do not add the Gemini key to `api/chat.js`, `js/site.js`, or any HTML file. Do not replace the generated HTML by hand. Change `build.py`, run it, and commit the result together with the source.
+- Do not commit `.env` or inbox data files.
+- Do not expose `ADMIN_PASSWORD`, blob tokens, or API keys in the README, HTML, or client JS.
+- Do not treat `/admin/` as a public page; keep it noindex and out of the main nav.
+- Prefer facts already published on the site over new claims in chat or copy.

@@ -340,12 +340,59 @@
       return true;
     }
     var greeted = false;
+    function speakerName(kind) {
+      if (kind === "from-user") {
+        var person = nameField ? nameField.value.trim() : "";
+        return person || "You";
+      }
+      return "Muhammad Adil";
+    }
     function addLine(text, kind) {
-      var line = document.createElement("p");
-      line.className = kind;
-      line.textContent = text;
+      var line = document.createElement("div");
+      line.className = "bubble " + kind;
+      var who = document.createElement("span");
+      who.className = "who";
+      who.textContent = speakerName(kind);
+      var body = document.createElement("p");
+      body.textContent = text;
+      line.append(who, body);
       log.appendChild(line);
       log.scrollTop = log.scrollHeight;
+      return line;
+    }
+    function setLine(line, text) {
+      line.classList.remove("is-typing");
+      line.removeAttribute("aria-busy");
+      var icon = line.querySelector(":scope > .mark");
+      if (icon) icon.remove();
+      var copy = line.querySelector(":scope > .typing-copy");
+      if (copy) {
+        while (copy.firstChild) line.appendChild(copy.firstChild);
+        copy.remove();
+      }
+      var body = line.querySelector("p");
+      if (body) body.textContent = text;
+      log.scrollTop = log.scrollHeight;
+    }
+    function addTyping() {
+      var line = addLine("", "from-bot");
+      line.classList.add("is-typing");
+      line.setAttribute("aria-busy", "true");
+      var source = chat.querySelector(".chat-head .mark");
+      if (source) line.insertBefore(source.cloneNode(true), line.firstChild);
+      var copy = document.createElement("div");
+      copy.className = "typing-copy";
+      var who = line.querySelector(".who");
+      var body = line.querySelector("p");
+      copy.append(who, body);
+      line.appendChild(copy);
+      var dots = document.createElement("span");
+      dots.className = "typing";
+      dots.setAttribute("aria-hidden", "true");
+      for (var i = 0; i < 3; i += 1) dots.appendChild(document.createElement("i"));
+      body.appendChild(dots);
+      log.scrollTop = log.scrollHeight;
+      return line;
     }
     function answer(raw) {
       var q = raw.toLowerCase();
@@ -391,17 +438,15 @@
         var text = field.value.trim();
         if (!text || busy || !contactReady()) return;
         if (!greeted) greeted = true;
+        form.classList.add("is-chatting");
         addLine(text, "from-user");
         field.value = "";
+        if (field) field.focus();
         if (handoff) handoff.href = "https://api.whatsapp.com/send/?phone=923180253146&text=" + encodeURIComponent(text) + "&type=phone_number&app_absent=0";
         turns.push({ role: "user", text: text });
         if (turns.length > 8) turns = turns.slice(-8);
         busy = true;
-        var pending = document.createElement("p");
-        pending.className = "from-bot";
-        pending.textContent = "…";
-        log.appendChild(pending);
-        log.scrollTop = log.scrollHeight;
+        var pending = addTyping();
         var chatBody = {
           messages: turns,
           lang: root.dataset.lang || "en",
@@ -423,12 +468,25 @@
           return response.json();
         }).then(function (data) {
           if (!data || !data.reply) throw new Error("empty");
-          pending.textContent = data.reply;
+          setLine(pending, data.reply);
           turns.push({ role: "model", text: data.reply });
         }).catch(function () {
           var fallback = t(answer(text));
-          pending.textContent = fallback;
+          setLine(pending, fallback);
           turns.push({ role: "model", text: fallback });
+          fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              saveReply: true,
+              userText: text,
+              reply: fallback,
+              sessionId: chatBody.sessionId,
+              path: chatBody.path,
+              contact: chatBody.contact,
+              context: chatBody.context
+            })
+          }).catch(function () {});
         }).then(function () {
           busy = false;
           log.scrollTop = log.scrollHeight;

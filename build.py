@@ -511,7 +511,9 @@ FOOTER = """<footer id="contact" class="contact" data-rail="Contact">
 </div>
 </div>"""
 
-MARK = """<span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="mark-fill" d="M18 2H62V46L46 62H2V18Z"/><path fill="currentColor" fill-rule="evenodd" d="M18 2H62V46L46 62H2V18Z M19.08 4.6H59.4V44.92L44.92 59.4H4.6V19.08Z"/></svg><span>MA</span></span>"""
+MARK = """<span class="mark" aria-hidden="true"><img src="/favicon.svg?v=3" alt="" width="46" height="46"></span>"""
+WA_ICON = """<svg class="wa-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#25D366"/><path fill="#fff" d="M17.47 14.73c-.25.7-1.45 1.34-2 1.42-.52.08-1.16.12-1.87-.12-.43-.14-.98-.32-1.68-.63-2.96-1.28-4.89-4.27-5.04-4.47-.15-.2-1.2-1.59-1.2-3.03s.76-2.15 1.03-2.45c.25-.28.66-.41 1.05-.41.13 0 .25 0 .36.01.32.01.48-.02.72.55.25.62.86 2.13.93 2.28.07.16.12.35.02.56-.1.21-.15.34-.29.52-.14.18-.31.4-.44.53-.14.14-.29.3-.12.57.16.28.72 1.2 1.56 1.94 1.07.95 1.97 1.25 2.27 1.39.28.13.44.11.61-.07.16-.19.7-.81.89-1.09.18-.28.37-.23.62-.14.25.09 1.59.75 1.86.89.27.13.45.2.52.32.07.11.07.66-.18 1.36z"/></svg>"""
+CLOSE_ICON = """<svg class="close-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>"""
 
 CHAT = f"""<div class="chat">
 <section class="chat-panel" id="chat-panel" hidden>
@@ -522,8 +524,8 @@ CHAT = f"""<div class="chat">
 <p class="status"><span class="pulse" aria-hidden="true"></span> Open to remote</p>
 <p class="chat-time">Local time in Karachi, Pakistan: <time data-no-i18n datetime="">00:00</time></p>
 </div>
-<a class="chat-wa" href="https://api.whatsapp.com/send/?phone=923180253146&amp;text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&amp;type=phone_number&amp;app_absent=0" rel="noopener" target="_blank" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.74.46 3.44 1.34 4.94L2 22l5.39-1.4a10.1 10.1 0 0 0 4.65 1.12h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2zm5.76 14.04c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.81-.11-.41-.14-.95-.31-1.63-.61-2.87-1.24-4.74-4.14-4.88-4.33-.14-.19-1.16-1.54-1.16-2.94s.73-2.08 1-2.37c.24-.27.64-.4 1.02-.4.13 0 .24 0 .35.01.31.01.46-.02.7.54.24.6.83 2.06.9 2.21.07.16.12.34.02.54-.1.2-.14.33-.28.51-.14.17-.3.38-.42.51-.14.14-.28.29-.12.55.16.27.7 1.16 1.51 1.88 1.04.92 1.91 1.21 2.2 1.35.27.13.43.11.59-.07.16-.18.68-.79.86-1.06.18-.27.36-.22.6-.13.24.09 1.54.73 1.8.86.27.13.44.2.51.31.06.11.06.64-.18 1.32z"/></svg></a>
-<button type="button" class="chat-close" data-chat-close aria-label="Close">×</button>
+<a class="chat-wa" href="https://api.whatsapp.com/send/?phone=923180253146&amp;text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&amp;type=phone_number&amp;app_absent=0" rel="noopener" target="_blank" aria-label="WhatsApp">{WA_ICON}</a>
+<button type="button" class="chat-close" data-chat-close aria-label="Close">{CLOSE_ICON}</button>
 </header>
 <p class="chat-note">An assistant answers from this site. Muhammad reads the saved chat and WhatsApp.</p>
 <div class="chat-log" aria-live="polite"></div>
@@ -547,7 +549,7 @@ CHAT = f"""<div class="chat">
 <textarea id="chat-message" rows="2"></textarea>
 <div class="chat-actions">
 <button class="chat-send" type="submit">Send</button>
-<a class="chat-handoff" href="https://api.whatsapp.com/send/?phone=923180253146&amp;text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&amp;type=phone_number&amp;app_absent=0" rel="noopener" target="_blank">WhatsApp</a>
+<a class="chat-handoff" href="https://api.whatsapp.com/send/?phone=923180253146&amp;text=Hello%20Muhammad%2C%20I%20saw%20your%20portfolio%20and%20wanted%20to%20reach%20you.&amp;type=phone_number&amp;app_absent=0" rel="noopener" target="_blank">{WA_ICON}<span>WhatsApp</span></a>
 </div>
 </form>
 </section>
@@ -583,7 +585,7 @@ def page(path, title, description, body, current=None, tone=None):
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{description}">
 <meta property="og:type" content="website">
-<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1337,7 +1339,7 @@ def js_required():
 <title>JavaScript is Required — Muhammad Adil</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0c1024">
-<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1378,7 +1380,7 @@ def privacy():
 <div class="wrap">
 <h2 class="glance-title">Summary at a glance</h2>
 <dl class="glance">
-<div><dt>Last updated</dt><dd>22 November 2026</dd></div>
+<div><dt>Last updated</dt><dd>23 November 2026</dd></div>
 <div><dt>Data controller</dt><dd>Muhammad Adil</dd></div>
 <div><dt>Direct inquiries</dt><dd><a href="mailto:adilm0616@gmail.com">adilm0616@gmail.com</a></dd></div>
 <div><dt>Location</dt><dd>Karachi, Pakistan</dd></div>
@@ -1413,8 +1415,8 @@ def privacy():
 <p>This website, at <a href="https://muhammad-adil-portfolio.vercel.app/">muhammad-adil-portfolio.vercel.app</a> and <a href="https://adil-portfolio-sigma.vercel.app/">adil-portfolio-sigma.vercel.app</a>, is the portfolio of Muhammad Adil, a senior backend developer in Karachi, Pakistan.</p>
 <p>I do not sell personal information, run advertising, or follow people across other websites. This policy describes the limited information the site processes when you read it, use the chat, or write to me directly.</p>
 <h2 id="collected">2. Information collected</h2>
-<h3>A. There is no contact form</h3>
-<p>This site has no form that stores a name, email, phone number or project brief. The email, phone and WhatsApp links open your own mail app or WhatsApp. A message you send that way is received by me at adilm0616@gmail.com or on WhatsApp at +92 318 0253146. This website does not keep a copy of it.</p>
+<h3>A. Email, phone and WhatsApp links</h3>
+<p>There is no separate contact form for a project brief. The email, phone and WhatsApp links open your own mail app or WhatsApp. A message you send that way is received by me at adilm0616@gmail.com or on WhatsApp at +92 318 0253146. This website does not keep a copy of those direct messages. The on-site chat is different and is described next.</p>
 <h3>B. Chat messages</h3>
 <p>If you use the chat, it asks for your name. Phone and email are optional. The name, phone, email, the message you type, and the reply are saved in a private log so I can read the conversation. The open page also keeps the current thread until you leave it.</p>
 <p>The message and up to the previous eight turns go to Google's Gemini API, which writes a short reply from what is written on this site. Your name, phone and email are not sent to Gemini. The chat does not ask for your GPS location.</p>
@@ -1444,7 +1446,7 @@ def privacy():
 <li><strong>adil-session</strong>, until you close the browser. A random ID for this visit.</li>
 <li><strong>adil-theme</strong> and <strong>adil-lang</strong>, for 180 days, only if you choose Accept all or turn on Remember me.</li>
 <li><strong>adil-id</strong>, for 180 days, only with that same choice. A random ID so a return visit is recognised.</li>
-<li><strong>adil-admin</strong>, for 12 hours, and only in the browser I use to sign in to the private reading page. It is not set for visitors.</li>
+<li><strong>adil-admin</strong>, for 30 days, and only in the browser I use to sign in to the private reading page. It refreshes while that page is used. It is not set for visitors.</li>
 </ul>
 <p>The browser also keeps a few values that are not cookies. Theme and language are saved in local storage when you change them, so the next page can paint the same way. After the reCAPTCHA check passes, a local flag named adil-human stores the time, and the check stays off in this browser for 24 hours. For the open tab, the landing page, the referring address, the region, and the name, phone and email typed in the chat sit in session storage and are dropped when the tab closes.</p>
 <p>Necessary only deletes adil-theme, adil-lang and adil-id. To choose again later, clear this site's cookies in your browser.</p>

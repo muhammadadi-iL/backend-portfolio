@@ -14,13 +14,14 @@
   const search = document.getElementById("dash-search");
   const count = document.getElementById("dash-count");
   const clearSearch = document.getElementById("dash-clear");
-  const kicker = document.querySelector(".inbox-brand .eyebrow");
+  const pageTitle = document.getElementById("dash-title");
 
   let data = { visits: [], chats: [] };
   let view = "overview";
   let selected = "";
   let riseIndex = 0;
-  let statsAnimated = false;
+  let page = 1;
+  const pageSize = 20;
 
   function rise(node) {
     node.classList.add("rise");
@@ -39,6 +40,57 @@
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return String(value);
     return date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  }
+
+  function ago(value) {
+    const date = new Date(value);
+    if (!value || Number.isNaN(date.getTime())) return "";
+    const minutes = Math.round((Date.now() - date.getTime()) / 60000);
+    if (minutes < 1) return "just now";
+    if (minutes < 60) return minutes + "m ago";
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return hours + "h ago";
+    const days = Math.round(hours / 24);
+    if (days < 14) return days + "d ago";
+    return when(value);
+  }
+
+  function pageWindow(rows) {
+    const pages = Math.max(1, Math.ceil(rows.length / pageSize));
+    if (page > pages) page = pages;
+    if (page < 1) page = 1;
+    const start = (page - 1) * pageSize;
+    return { rows: rows.slice(start, start + pageSize), start: start, total: rows.length, pages: pages };
+  }
+
+  function pager(total) {
+    if (total <= pageSize) return null;
+    const pages = Math.max(1, Math.ceil(total / pageSize));
+    const start = (page - 1) * pageSize;
+    const end = Math.min(total, start + pageSize);
+    const bar = el("nav", "pager");
+    bar.setAttribute("aria-label", "Pages");
+    const label = el("p", "", (start + 1) + "–" + end + " of " + total);
+    const prev = el("button", "btn", "Previous");
+    const next = el("button", "btn", "Next");
+    prev.type = "button";
+    next.type = "button";
+    prev.disabled = page <= 1;
+    next.disabled = page >= pages;
+    prev.addEventListener("click", () => {
+      page -= 1;
+      selected = "";
+      render();
+      window.scrollTo(0, 0);
+    });
+    next.addEventListener("click", () => {
+      page += 1;
+      selected = "";
+      render();
+      window.scrollTo(0, 0);
+    });
+    bar.append(prev, label, next);
+    return bar;
   }
 
   function deviceLabel(value) {
@@ -250,7 +302,7 @@
       return card;
     }
     const total = pairs.reduce((sum, pair) => sum + pair[1], 0) || 1;
-    const tones = ["#8b6cff", "#c4b5ff", "#6d4aff", "#efe8ff", "#4e3d91", "#9a78ff"];
+    const tones = ["#ededed", "#666666", "#a1a1a1", "#333333", "#888888", "#444444"];
     const radius = 46;
     const circ = 2 * Math.PI * radius;
     const board = svg("svg", { viewBox: "0 0 180 140", class: "chart donut", role: "img" });
@@ -330,17 +382,31 @@
     return card;
   }
 
-  function transcript(messages) {
-    const wrap = el("div");
+  function transcript(messages, visitorName) {
+    const wrap = el("div", "thread-wrap");
+    const visitor = String(visitorName || "").trim() || "Visitor";
+    const fromVisitor = messages.filter((message) => message.role !== "model").length;
+    const fromMuhammad = messages.length - fromVisitor;
     wrap.appendChild(el("h3", "", "Conversation"));
+    wrap.appendChild(el("p", "thread-count", fromVisitor + " from " + visitor + " · " + fromMuhammad + " from Muhammad"));
     if (!messages.length) {
       wrap.appendChild(empty("No messages saved."));
       return wrap;
     }
+    const thread = el("div", "thread");
     messages.forEach((message) => {
-      const block = el("div", "msg" + (message.role === "model" ? " model" : ""));
-      block.append(el("strong", "", (message.role === "model" ? "Reply" : "Visitor") + " · " + when(message.at)), el("p", "", message.text || ""));
-      wrap.appendChild(block);
+      const mine = message.role === "model";
+      const block = el("div", "bubble " + (mine ? "reply" : "visitor"));
+      const time = el("time", "", when(message.at));
+      if (message.at) time.dateTime = message.at;
+      block.append(el("span", "who", mine ? "Muhammad" : visitor), el("p", "", message.text || ""), time);
+      thread.appendChild(block);
+    });
+    wrap.appendChild(thread);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        thread.scrollTop = thread.scrollHeight;
+      });
     });
     return wrap;
   }
@@ -425,11 +491,109 @@
   function paintVisits(root) {
     root.append(el("h2", "dash-title", "Visits"), el("p", "dash-note", "Every counted page view, newest first. Open a row for the full record."));
     const rows = visitRows(data.visits);
+    const shown = pageWindow(rows);
     root.appendChild(columnChart("Visits by day", seriesByDay(rows.map((item) => item.row), (row) => row.at)));
     const detail = paintVisitDetail(rows);
     if (detail) root.appendChild(detail);
-    root.appendChild(rows.length ? table(["Time", "Page", "IP address", "Location", "Device", "Referrer"], rows) : empty("No visits match."));
+    root.appendChild(shown.rows.length ? table(["Time", "Page", "IP address", "Location", "Device", "Referrer"], shown.rows) : empty("No visits match."));
+    const bar = pager(rows.length);
+    if (bar) root.appendChild(bar);
     count.textContent = tally(rows.length, "visit", "visits");
+  }
+
+  function activityItems() {
+    const items = [];
+    data.visits.forEach((row, index) => {
+      items.push({
+        key: "visit:" + (row.at || "") + ":" + (row.ip || "") + ":" + (row.path || "") + ":" + index,
+        at: row.at,
+        kind: "Visit",
+        title: row.path || "/",
+        meta: [row.ip, placeLabel(row), deviceLabel(row.device)].filter(Boolean).join(" · "),
+        search: [row.path, row.ip, placeLabel(row), row.device, row.referrer, row.landing, row.sessionId, row.visitorId],
+        visit: row,
+      });
+    });
+    data.chats.forEach((thread) => {
+      const messages = thread.messages || [];
+      const last = messages[messages.length - 1];
+      const spoken = messages.filter((message) => message.role !== "model");
+      const previewSource = spoken.length ? spoken[spoken.length - 1] : last;
+      const preview = String((previewSource && previewSource.text) || "").replace(/\s+/g, " ").trim();
+      items.push({
+        key: "chat:" + (thread.sessionId || thread.name || ""),
+        at: (last && last.at) || "",
+        kind: "Chat",
+        title: thread.name || thread.email || thread.phone || "Visitor",
+        meta: preview.length > 96 ? preview.slice(0, 93) + "…" : preview,
+        search: [thread.name, thread.phone, thread.email, thread.region, thread.path, preview, thread.sessionId, thread.visitorId],
+        thread: thread,
+      });
+    });
+    return items.filter((item) => matches(item.search)).sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  }
+
+  function paintActivity(root) {
+    root.append(el("h2", "dash-title", "Activity"), el("p", "dash-note", "Visits and chats in one list, newest first. The page stays put while you refresh. Open a row for the full record."));
+    const items = activityItems();
+    const shown = pageWindow(items);
+    const hit = items.find((item) => item.key === selected);
+    if (hit && hit.visit) {
+      const records = items.filter((item) => item.visit).map((item) => ({ key: item.key, row: item.visit }));
+      const detail = paintVisitDetail(records);
+      if (detail) root.appendChild(detail);
+    } else if (hit && hit.thread) {
+      const thread = hit.thread;
+      const visits = visitsForChat(thread);
+      const first = (thread.messages || [])[0];
+      const last = (thread.messages || [])[(thread.messages || []).length - 1];
+      const extra = el("div");
+      extra.appendChild(transcript(thread.messages || [], thread.name));
+      extra.appendChild(el("h3", "", "Visits from this person"));
+      if (!visits.length) extra.appendChild(empty("No visit shares this session or visitor ID."));
+      else {
+        extra.appendChild(table(["Time", "IP address", "Page", "Location"], visits.slice().reverse().map((row) => ({
+          cells: [{ text: when(row.at), mono: true }, { text: blank(row.ip), mono: true }, { text: blank(row.path), mono: true }, { text: blank(placeLabel(row)) }],
+        })), true));
+      }
+      root.appendChild(detailCard(thread.name || "Visitor", [
+        ["Name", thread.name],
+        ["Phone", thread.phone],
+        ["Email", thread.email],
+        ["Location", thread.region || (visits[0] && placeLabel(visits[0]))],
+        ["Page", thread.path],
+        ["Device", deviceLabel(thread.device)],
+        ["Session", thread.sessionId],
+        ["Started", when(first && first.at)],
+        ["Last message", when(last && last.at)],
+      ], extra));
+    }
+    if (!shown.rows.length) {
+      root.appendChild(empty("No activity matches."));
+    } else {
+      const list = el("ul", "log");
+      shown.rows.forEach((item) => {
+        const line = el("li");
+        const button = el("button");
+        button.type = "button";
+        if (item.key === selected) button.classList.add("is-on");
+        const time = el("time", "", when(item.at));
+        time.dateTime = item.at || "";
+        const copy = el("span", "log-copy");
+        copy.append(el("span", "log-title", item.title), el("span", "log-meta", item.meta || "—"));
+        button.append(time, el("span", "log-kind", item.kind), copy, el("span", "log-ago", ago(item.at)));
+        button.addEventListener("click", () => {
+          selected = selected === item.key ? "" : item.key;
+          render();
+        });
+        line.appendChild(button);
+        list.appendChild(line);
+      });
+      root.appendChild(list);
+    }
+    const bar = pager(items.length);
+    if (bar) root.appendChild(bar);
+    count.textContent = tally(items.length, "event", "events");
   }
 
   function paintIps(root) {
@@ -481,7 +645,10 @@
         ["Visitor IDs", String(unique(hit.group.rows, "visitorId"))],
       ], extra));
     }
-    root.appendChild(groups.length ? table(["IP address", "Visits", "Locations", "Last seen", "Devices", "Pages"], groups) : empty("No IP addresses match."));
+    const shownIps = pageWindow(groups);
+    root.appendChild(shownIps.rows.length ? table(["IP address", "Visits", "Locations", "Last seen", "Devices", "Pages"], shownIps.rows) : empty("No IP addresses match."));
+    const ipBar = pager(groups.length);
+    if (ipBar) root.appendChild(ipBar);
     count.textContent = tally(groups.length, "address", "addresses");
   }
 
@@ -526,7 +693,10 @@
         ["Pages", Array.from(new Set(hit.group.rows.map((row) => row.path).filter(Boolean))).join(", ")],
       ], extra));
     }
-    root.appendChild(groups.length ? table(["Location", "Visits", "IP addresses", "Last seen", "Country"], groups, true) : empty("No locations match."));
+    const shownPlaces = pageWindow(groups);
+    root.appendChild(shownPlaces.rows.length ? table(["Location", "Visits", "IP addresses", "Last seen", "Country"], shownPlaces.rows, true) : empty("No locations match."));
+    const placeBar = pager(groups.length);
+    if (placeBar) root.appendChild(placeBar);
     count.textContent = tally(groups.length, "location", "locations");
   }
 
@@ -560,7 +730,7 @@
       const first = (thread.messages || [])[0];
       const last = (thread.messages || [])[(thread.messages || []).length - 1];
       const extra = el("div");
-      extra.appendChild(transcript(thread.messages || []));
+      extra.appendChild(transcript(thread.messages || [], thread.name));
       extra.appendChild(el("h3", "", "Visits from this person"));
       if (!hit.visits.length) extra.appendChild(empty("No visit shares this session or visitor ID."));
       else {
@@ -583,7 +753,10 @@
         ["Last message", when(last && last.at)],
       ], extra));
     }
-    root.appendChild(threads.length ? table(["Name", "Phone", "Email", "Location", "Messages", "Last message"], threads, true) : empty("No chats match."));
+    const shownThreads = pageWindow(threads);
+    root.appendChild(shownThreads.rows.length ? table(["Name", "Phone", "Email", "Location", "Messages", "Last message"], shownThreads.rows, true) : empty("No chats match."));
+    const chatBar = pager(threads.length);
+    if (chatBar) root.appendChild(chatBar);
     count.textContent = tally(threads.length, "chat", "chats");
   }
 
@@ -597,14 +770,16 @@
     viewRoot.replaceChildren();
     count.textContent = "";
     if (view === "overview") paintOverview(viewRoot);
+    else if (view === "activity") paintActivity(viewRoot);
     else if (view === "visits") paintVisits(viewRoot);
     else if (view === "ips") paintIps(viewRoot);
     else if (view === "locations") paintLocations(viewRoot);
     else paintChats(viewRoot);
-    const names = { overview: "Overview", visits: "Visits", ips: "IP addresses", locations: "Locations", chats: "Chats" };
-    if (kicker) kicker.textContent = names[view] || "Overview";
+    const names = { overview: "Overview", activity: "Activity", visits: "Visits", ips: "IP addresses", locations: "Locations", chats: "Chats" };
+    if (pageTitle) pageTitle.textContent = names[view] || "Overview";
     const prompts = {
       overview: "Search page, IP, location, device",
+      activity: "Search a page, IP, name, or message",
       visits: "Search page, IP, location, device",
       ips: "Search an IP address or page",
       locations: "Search a city, region, or country",
@@ -627,29 +802,18 @@
     ];
     const row = el("div", "stats");
     cards.forEach((card) => {
-      const button = rise(el("button", "stat" + (view === card[0] && card[2] !== "Pages" && card[2] !== "Contacts" ? " is-on" : "")));
+      const button = el("button", "stat" + (view === card[0] && card[2] !== "Pages" && card[2] !== "Contacts" ? " is-on" : ""));
       button.type = "button";
-      const figure = el("b", "", reduce || statsAnimated ? String(card[1]) : "0");
-      button.append(figure, el("span", "", card[2]));
-      if (!reduce && !statsAnimated) {
-        const target = card[1];
-        const started = performance.now();
-        const tick = (now) => {
-          const t = Math.min(1, (now - started) / 650);
-          figure.textContent = String(Math.round(target * (1 - Math.pow(1 - t, 3))));
-          if (t < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      }
+      button.append(el("b", "", String(card[1])), el("span", "", card[2]));
       button.addEventListener("click", () => {
         view = card[0];
         selected = "";
+        page = 1;
         render();
         window.scrollTo(0, 0);
       });
       row.appendChild(button);
     });
-    statsAnimated = true;
     return row;
   }
 
@@ -680,7 +844,8 @@
     const busy = !refresh.hidden;
     if (busy) {
       refresh.disabled = true;
-      refresh.textContent = "Refreshing";
+      refresh.classList.add("is-busy");
+      refresh.setAttribute("aria-label", "Refreshing");
     }
     let response;
     try {
@@ -690,7 +855,8 @@
     } finally {
       if (busy) {
         refresh.disabled = false;
-        refresh.textContent = "Refresh";
+        refresh.classList.remove("is-busy");
+        refresh.setAttribute("aria-label", "Refresh");
       }
     }
     if (!response) {
@@ -722,6 +888,7 @@
     button.addEventListener("click", () => {
       view = button.dataset.view;
       selected = "";
+      page = 1;
       render();
       window.scrollTo(0, 0);
     });
@@ -731,12 +898,14 @@
   }
   search.addEventListener("input", () => {
     selected = "";
+    page = 1;
     syncClear();
     render();
   });
   clearSearch.addEventListener("click", () => {
     search.value = "";
     selected = "";
+    page = 1;
     syncClear();
     search.focus();
     render();
@@ -800,6 +969,7 @@
     data = { visits: [], chats: [] };
     selected = "";
     search.value = "";
+    page = 1;
     view = "overview";
     viewRoot.replaceChildren();
     lead.textContent = "Visits, IP addresses, locations and saved chats.";

@@ -80,8 +80,10 @@ function markFail(ip) {
   row.at = Date.now();
 }
 
+const SESSION_AGE = 60 * 60 * 24 * 30;
+
 function setCookie(res, req, value, maxAge) {
-  const parts = [`adil-admin=${value}`, "HttpOnly", "Path=/", "SameSite=Strict", `Max-Age=${maxAge}`];
+  const parts = [`adil-admin=${value}`, "HttpOnly", "Path=/", "SameSite=Lax", `Max-Age=${maxAge}`];
   if (!localHost(req)) parts.push("Secure");
   res.setHeader("Set-Cookie", parts.join("; "));
 }
@@ -103,6 +105,7 @@ module.exports = async function handler(req, res) {
       send(res, 401, { error: "sign in" });
       return;
     }
+    setCookie(res, req, sessionValue(), SESSION_AGE);
     const visits = await store.readRows("visits");
     const threads = await chats.threads();
     send(res, 200, { visits: visits.slice().reverse(), chats: threads.slice().reverse() });
@@ -131,6 +134,6 @@ module.exports = async function handler(req, res) {
     return;
   }
   fails.delete(ip);
-  setCookie(res, req, sessionValue(), 60 * 60 * 12);
+  setCookie(res, req, sessionValue(), SESSION_AGE);
   send(res, 200, { ok: true });
 };

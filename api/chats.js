@@ -4,6 +4,16 @@ function clean(value, max) {
   return String(value || "").replace(/[\r\n\t]+/g, " ").trim().slice(0, max);
 }
 
+function messageText(value, max) {
+  return String(value || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\t/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, max);
+}
+
 function emailOf(value) {
   const email = clean(value, 120).toLowerCase();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
@@ -53,14 +63,13 @@ async function threads() {
   return order.map((id) => map.get(id));
 }
 
-async function append(row) {
-  const text = clean(row.text, 1200);
-  if (!text) return;
+function recordOf(row, at) {
+  const text = messageText(row.text, 1200);
+  if (!text) return null;
   const context = row.context && typeof row.context === "object" ? row.context : {};
   const contact = row.contact && typeof row.contact === "object" ? row.contact : {};
-  try {
-    await store.appendRow("chats", {
-    at: new Date().toISOString(),
+  return {
+    at: at,
     sessionId: clean(row.sessionId, 80),
     path: clean(row.path, 180),
     name: clean(contact.name, 80),
@@ -73,10 +82,22 @@ async function append(row) {
     device: clean(context.device, 80),
     role: row.role === "model" ? "model" : "user",
     text: text,
-    });
+  };
+}
+
+async function appendMany(rows) {
+  const started = Date.now();
+  const records = rows.map((row, index) => recordOf(row, new Date(started + index).toISOString())).filter(Boolean);
+  if (!records.length) return;
+  try {
+    await store.appendRows("chats", records);
   } catch (error) {
     console.error("chat store failed");
   }
+}
+
+async function append(row) {
+  await appendMany([row]);
 }
 
 async function handler(req, res) {
@@ -92,4 +113,5 @@ async function handler(req, res) {
 
 module.exports = handler;
 module.exports.append = append;
+module.exports.appendMany = appendMany;
 module.exports.threads = threads;
