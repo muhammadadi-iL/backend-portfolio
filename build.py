@@ -600,7 +600,6 @@ def page(path, title, description, body, current=None, tone=None):
 {MARK}
 <p class="eyebrow">Quick check</p>
 <h2 id="captcha-title">Confirm you are a person</h2>
-<p>This runs once a day in this browser. It stays off while you move between pages.</p>
 <div id="captcha-widget"></div>
 <p class="captcha-error" hidden>That check did not pass. Try again.</p>
 </div>
@@ -1517,5 +1516,5 @@ if __name__ == "__main__":
     ship()
     about()
     privacy()
-    js_required()
+    # javascript-required/index.html is hand-maintained; do not regenerate it.
     sitemap()

@@ -654,7 +654,6 @@ window.AR = {
  "Mosaed Elbhos — Muhammad Adil": "Mosaed Elbhos — محمد عادل",
  "Quick check": "تحقق سريع",
  "Confirm you are a person": "أكّد أنك شخص",
- "This runs once a day in this browser. It stays off while you move between pages.": "يتم هذا التحقق مرة واحدة في اليوم على هذا المتصفح. لا يظهر مرة أخرى أثناء التنقل بين الصفحات.",
  "That check did not pass. Try again.": "لم ينجح التحقق. حاول مرة أخرى.",
  "Privacy preferences": "تفضيلات الخصوصية",
  "This site counts visits so I can see which pages people read: your IP address, approximate location (from that address), device and the pages you open. With your permission, it also remembers your browser between visits, and the chat can note how you found the site.": "يعدّ هذا الموقع الزيارات لأرى الصفحات التي تُقرأ: عنوان IP، وموقع تقريبي من ذلك العنوان، والجهاز، والصفحات التي تفتحها. إذا سمحت، يتذكر المتصفح بين الزيارات أيضًا، ويمكن للدردشة أن تلاحظ كيف وصلت إلى الموقع.",
