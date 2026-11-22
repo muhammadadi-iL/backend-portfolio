@@ -15,20 +15,25 @@
 </head>
 <body class="page-admin">
 <section class="gate" id="gate">
+  <div class="gate-scene" aria-hidden="true">
+    <span class="gate-orb gate-orb-a"></span>
+    <span class="gate-orb gate-orb-b"></span>
+    <span class="gate-halo"></span>
+  </div>
   <div class="gate-card">
     <div class="gate-brand">
-      <span class="mark gate-mark" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="mark-fill" d="M18 2H62V46L46 62H2V18Z"/><path fill="currentColor" fill-rule="evenodd" d="M18 2H62V46L46 62H2V18Z M19.08 4.6H59.4V44.92L44.92 59.4H4.6V19.08Z"/></svg><span>MA</span></span>
+      <img class="gate-favicon" src="/favicon.svg?v=2" alt="" width="72" height="72">
       <p class="brand-name">Muhammad Adil</p>
       <p class="brand-role">Senior Backend Developer</p>
     </div>
     <form id="login">
-      <p class="eyebrow">Private</p>
-      <h1>Sign in</h1>
-      <p class="gate-lead">Visits, IP addresses, locations and saved chats.</p>
-      <label for="password">Password</label>
+      <p class="eyebrow">Sign in</p>
       <div class="gate-field">
-        <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="200">
-        <button class="gate-reveal" id="toggle-password" type="button" aria-pressed="false" aria-label="Show password">Show</button>
+        <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="200" placeholder="Password" aria-label="Password">
+        <button class="gate-reveal" id="toggle-password" type="button" aria-pressed="false" aria-label="Show password">
+          <svg class="icon-show" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+          <svg class="icon-hide" viewBox="0 0 24 24" aria-hidden="true" hidden><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
+        </button>
       </div>
       <p class="inbox-error" id="login-error" role="alert"></p>
       <button class="btn btn-primary gate-submit" type="submit">Sign in</button>
@@ -39,9 +44,9 @@
 <main class="inbox" id="app" hidden>
   <div class="inbox-top">
     <div class="inbox-brand">
-      <span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="mark-fill" d="M18 2H62V46L46 62H2V18Z"/><path fill="currentColor" fill-rule="evenodd" d="M18 2H62V46L46 62H2V18Z M19.08 4.6H59.4V44.92L44.92 59.4H4.6V19.08Z"/></svg><span>MA</span></span>
+      <img class="inbox-mark" src="/favicon.svg?v=2" alt="" width="44" height="44">
       <div>
-        <p class="eyebrow">Private</p>
+        <p class="eyebrow">Overview</p>
         <h1>Dashboard</h1>
         <p id="inbox-lead">Visits, IP addresses, locations and saved chats.</p>
       </div>
@@ -61,7 +66,10 @@
     </nav>
     <div>
       <div class="dash-tools">
-        <input class="dash-search" id="dash-search" type="search" placeholder="Search page, IP, location, name, email" autocomplete="off">
+        <div class="dash-search-wrap">
+          <input class="dash-search" id="dash-search" type="search" placeholder="Search page, IP, location, name, email" autocomplete="off">
+          <button class="dash-clear" id="dash-clear" type="button" hidden>Clear</button>
+        </div>
         <p class="dash-count" id="dash-count"></p>
       </div>
       <div id="dash-view"></div>

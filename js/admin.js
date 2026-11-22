@@ -13,11 +13,14 @@
   const viewRoot = document.getElementById("dash-view");
   const search = document.getElementById("dash-search");
   const count = document.getElementById("dash-count");
+  const clearSearch = document.getElementById("dash-clear");
+  const kicker = document.querySelector(".inbox-brand .eyebrow");
 
   let data = { visits: [], chats: [] };
   let view = "overview";
   let selected = "";
   let riseIndex = 0;
+  let statsAnimated = false;
 
   function rise(node) {
     node.classList.add("rise");
@@ -35,7 +38,15 @@
     if (!value) return "—";
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return String(value);
-    return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+    return date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  }
+
+  function deviceLabel(value) {
+    return String(value || "").replace(/,/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  function tally(amount, one, many) {
+    return amount + " " + (amount === 1 ? one : many);
   }
 
   function placeParts(row) {
@@ -183,7 +194,7 @@
   function deviceCounts(rows) {
     const map = new Map();
     rows.forEach((row) => {
-      const label = row.device || "Unknown";
+      const label = deviceLabel(row.device) || "Unknown";
       map.set(label, (map.get(label) || 0) + 1);
     });
     return Array.from(map).sort((a, b) => b[1] - a[1]).slice(0, 6);
@@ -205,14 +216,14 @@
     const shown = pairs.slice(-10);
     const max = Math.max.apply(null, shown.map((pair) => pair[1]).concat(1));
     const width = 360;
-    const height = 168;
-    const plot = 118;
+    const height = 176;
+    const plot = 128;
     const gap = 10;
     const barW = Math.max(10, (width - gap * (shown.length + 1)) / shown.length);
     const board = svg("svg", { viewBox: "0 0 " + width + " " + height, class: "chart", role: "img" });
     board.setAttribute("aria-label", title);
     shown.forEach((pair, index) => {
-      const barH = Math.max(6, (pair[1] / max) * (plot - 8));
+      const barH = Math.max(6, (pair[1] / max) * (plot - 28));
       const x = gap + index * (barW + gap);
       const y = plot - barH;
       const rect = svg("rect", { x: x, y: y, width: barW, height: barH, rx: "5", class: "chart-col" });
@@ -220,9 +231,11 @@
       const tip = svg("title", {});
       tip.textContent = pair[0] + ": " + pair[1];
       rect.appendChild(tip);
+      const value = svg("text", { x: x + barW / 2, y: Math.max(14, y - 8), "text-anchor": "middle", class: "chart-value" });
+      value.textContent = String(pair[1]);
       const label = svg("text", { x: x + barW / 2, y: plot + 18, "text-anchor": "middle" });
       label.textContent = pair[0];
-      board.appendChild(rect);
+      board.append(rect, value);
       if (barW >= 32) board.appendChild(label);
     });
     card.appendChild(board);
@@ -291,7 +304,7 @@
       const row = el("div", "rank");
       const top = el("div", "rank-top");
       top.append(el("span", "", pair[0]), el("b", "", String(pair[1])));
-      const bar = el("div", "bar");
+      const bar = el("div", "meter");
       const fill = document.createElement("i");
       fill.style.width = Math.max(8, Math.round((pair[1] / max) * 100)) + "%";
       bar.appendChild(fill);
@@ -341,7 +354,7 @@
         { text: blank(row.path), mono: true },
         { text: blank(row.ip), mono: true },
         { text: blank(placeLabel(row)) },
-        { text: blank(row.device) },
+        { text: blank(deviceLabel(row.device)) },
         { text: blank(row.referrer || "direct") },
       ],
     }));
@@ -367,7 +380,7 @@
       ["Region", parts.area],
       ["Country", parts.country],
       ["Location", placeLabel(row)],
-      ["Device", row.device],
+      ["Device", deviceLabel(row.device)],
       ["Session", row.sessionId],
       ["Visitor ID", row.visitorId],
       ["Referrer", row.referrer || "direct"],
@@ -386,6 +399,7 @@
       places.set(place, (places.get(place) || 0) + 1);
     });
     const top = (map) => Array.from(map, (pair) => pair).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    root.append(el("p", "dash-note", "Open a row for the full record. The cards above jump to that list."));
     const charts = el("div", "split");
     charts.append(columnChart("Visits by day", seriesByDay(visits, (row) => row.at)), donutChart("Devices", deviceCounts(visits)));
     root.appendChild(charts);
@@ -397,7 +411,15 @@
     const detail = paintVisitDetail(latest);
     if (detail) root.appendChild(detail);
     root.appendChild(heading);
-    root.appendChild(latest.length ? table(["Time", "Page", "IP address", "Location", "Device", "Referrer"], latest) : empty("No visits yet."));
+    root.appendChild(latest.length ? table(["Time", "Page", "IP address", "Location", "Device"], latest.map((item) => ({
+      key: item.key,
+      row: item.row,
+      cells: item.cells.slice(0, 5),
+    })), true) : empty("No visits yet."));
+    const needle = search.value.trim();
+    count.textContent = needle
+      ? tally(visits.length, "matching visit", "matching visits")
+      : tally(data.visits.length, "visit", "visits") + " · " + tally(data.chats.length, "chat", "chats");
   }
 
   function paintVisits(root) {
@@ -407,7 +429,7 @@
     const detail = paintVisitDetail(rows);
     if (detail) root.appendChild(detail);
     root.appendChild(rows.length ? table(["Time", "Page", "IP address", "Location", "Device", "Referrer"], rows) : empty("No visits match."));
-    count.textContent = rows.length + " visits";
+    count.textContent = tally(rows.length, "visit", "visits");
   }
 
   function paintIps(root) {
@@ -415,7 +437,7 @@
     const groups = ipGroups().map((group) => {
       const last = group.rows[group.rows.length - 1];
       const places = Array.from(new Set(group.rows.map(placeLabel).filter(Boolean)));
-      const devices = Array.from(new Set(group.rows.map((row) => row.device).filter(Boolean)));
+      const devices = Array.from(new Set(group.rows.map((row) => deviceLabel(row.device)).filter(Boolean)));
       return {
         key: "ip:" + group.ip,
         group: group,
@@ -444,7 +466,7 @@
       related.forEach((thread) => extra.appendChild(el("p", "", [thread.name || "No name", thread.email, thread.phone].filter(Boolean).join(" · "))));
       extra.appendChild(el("h3", "", "Pages from this address"));
       const pageRows = hit.group.rows.slice().reverse().map((row) => ({
-        cells: [{ text: when(row.at), mono: true }, { text: blank(row.path), mono: true }, { text: blank(placeLabel(row)) }, { text: blank(row.device) }],
+        cells: [{ text: when(row.at), mono: true }, { text: blank(row.path), mono: true }, { text: blank(placeLabel(row)) }, { text: blank(deviceLabel(row.device)) }],
       }));
       extra.appendChild(table(["Time", "Page", "Location", "Device"], pageRows, true));
       root.appendChild(detailCard(hit.group.ip, [
@@ -460,7 +482,7 @@
       ], extra));
     }
     root.appendChild(groups.length ? table(["IP address", "Visits", "Locations", "Last seen", "Devices", "Pages"], groups) : empty("No IP addresses match."));
-    count.textContent = groups.length + " addresses";
+    count.textContent = tally(groups.length, "address", "addresses");
   }
 
   function paintLocations(root) {
@@ -488,7 +510,7 @@
     const hit = groups.find((item) => item.key === selected);
     if (hit) {
       const pageRows = hit.group.rows.slice().reverse().map((row) => ({
-        cells: [{ text: when(row.at), mono: true }, { text: blank(row.ip), mono: true }, { text: blank(row.path), mono: true }, { text: blank(row.device) }],
+        cells: [{ text: when(row.at), mono: true }, { text: blank(row.ip), mono: true }, { text: blank(row.path), mono: true }, { text: blank(deviceLabel(row.device)) }],
       }));
       const extra = el("div");
       extra.appendChild(el("h3", "", "Visits from this place"));
@@ -500,12 +522,12 @@
         ["Country", hit.parts.country],
         ["Visits", String(hit.group.rows.length)],
         ["IP addresses", String(hit.ips.length)],
-        ["Devices", Array.from(new Set(hit.group.rows.map((row) => row.device).filter(Boolean))).join(", ")],
+        ["Devices", Array.from(new Set(hit.group.rows.map((row) => deviceLabel(row.device)).filter(Boolean))).join(", ")],
         ["Pages", Array.from(new Set(hit.group.rows.map((row) => row.path).filter(Boolean))).join(", ")],
       ], extra));
     }
     root.appendChild(groups.length ? table(["Location", "Visits", "IP addresses", "Last seen", "Country"], groups, true) : empty("No locations match."));
-    count.textContent = groups.length + " locations";
+    count.textContent = tally(groups.length, "location", "locations");
   }
 
   function paintChats(root) {
@@ -554,7 +576,7 @@
         ["Page", thread.path],
         ["Landing page", thread.landing],
         ["Referrer", thread.referrer],
-        ["Device", thread.device],
+        ["Device", deviceLabel(thread.device)],
         ["Session", thread.sessionId],
         ["Visitor ID", thread.visitorId],
         ["Started", when(first && first.at)],
@@ -562,7 +584,7 @@
       ], extra));
     }
     root.appendChild(threads.length ? table(["Name", "Phone", "Email", "Location", "Messages", "Last message"], threads, true) : empty("No chats match."));
-    count.textContent = threads.length + " chats";
+    count.textContent = tally(threads.length, "chat", "chats");
   }
 
   function render() {
@@ -579,9 +601,16 @@
     else if (view === "ips") paintIps(viewRoot);
     else if (view === "locations") paintLocations(viewRoot);
     else paintChats(viewRoot);
-    if (view === "overview") {
-      count.textContent = data.visits.length + " visits · " + data.chats.length + " chats";
-    }
+    const names = { overview: "Overview", visits: "Visits", ips: "IP addresses", locations: "Locations", chats: "Chats" };
+    if (kicker) kicker.textContent = names[view] || "Overview";
+    const prompts = {
+      overview: "Search page, IP, location, device",
+      visits: "Search page, IP, location, device",
+      ips: "Search an IP address or page",
+      locations: "Search a city, region, or country",
+      chats: "Search a name, email, phone, or message",
+    };
+    search.placeholder = prompts[view] || prompts.overview;
     lead.textContent = "The latest 500 visits and 500 chat lines. Older ones are dropped.";
   }
 
@@ -600,9 +629,9 @@
     cards.forEach((card) => {
       const button = rise(el("button", "stat" + (view === card[0] && card[2] !== "Pages" && card[2] !== "Contacts" ? " is-on" : "")));
       button.type = "button";
-      const figure = el("b", "", reduce ? String(card[1]) : "0");
+      const figure = el("b", "", reduce || statsAnimated ? String(card[1]) : "0");
       button.append(figure, el("span", "", card[2]));
-      if (!reduce) {
+      if (!reduce && !statsAnimated) {
         const target = card[1];
         const started = performance.now();
         const tick = (now) => {
@@ -616,9 +645,11 @@
         view = card[0];
         selected = "";
         render();
+        window.scrollTo(0, 0);
       });
       row.appendChild(button);
     });
+    statsAnimated = true;
     return row;
   }
 
@@ -628,6 +659,10 @@
     baseRender();
     riseIndex = 0;
     if (viewRoot.firstChild) viewRoot.insertBefore(stats(), viewRoot.firstChild);
+    if (selected) {
+      const open = viewRoot.querySelector(".detail");
+      if (open) open.scrollIntoView({ block: "nearest" });
+    }
   };
 
   function show(mode) {
@@ -642,7 +677,27 @@
   }
 
   async function load() {
-    const response = await fetch("/api/admin", { cache: "no-store", credentials: "same-origin" });
+    const busy = !refresh.hidden;
+    if (busy) {
+      refresh.disabled = true;
+      refresh.textContent = "Refreshing";
+    }
+    let response;
+    try {
+      response = await fetch("/api/admin", { cache: "no-store", credentials: "same-origin" });
+    } catch (failure) {
+      response = null;
+    } finally {
+      if (busy) {
+        refresh.disabled = false;
+        refresh.textContent = "Refresh";
+      }
+    }
+    if (!response) {
+      error.textContent = "The dashboard could not be loaded.";
+      show("login");
+      return;
+    }
     if (response.status === 404) {
       show("unavailable");
       return;
@@ -668,32 +723,48 @@
       view = button.dataset.view;
       selected = "";
       render();
+      window.scrollTo(0, 0);
     });
   });
+  function syncClear() {
+    clearSearch.hidden = !search.value.trim();
+  }
   search.addEventListener("input", () => {
     selected = "";
+    syncClear();
+    render();
+  });
+  clearSearch.addEventListener("click", () => {
+    search.value = "";
+    selected = "";
+    syncClear();
+    search.focus();
     render();
   });
 
-  function concealPassword() {
+  function setPasswordVisible(visible) {
     const field = document.getElementById("password");
     const toggle = document.getElementById("toggle-password");
     if (!field || !toggle) return;
-    field.type = "password";
-    field.value = "";
-    toggle.textContent = "Show";
-    toggle.setAttribute("aria-pressed", "false");
-    toggle.setAttribute("aria-label", "Show password");
+    field.type = visible ? "text" : "password";
+    toggle.setAttribute("aria-pressed", visible ? "true" : "false");
+    toggle.setAttribute("aria-label", visible ? "Hide password" : "Show password");
+    toggle.querySelectorAll("svg").forEach((icon) => {
+      const on = icon.classList.contains(visible ? "icon-hide" : "icon-show");
+      if (on) icon.removeAttribute("hidden");
+      else icon.setAttribute("hidden", "");
+    });
+  }
+
+  function concealPassword() {
+    const field = document.getElementById("password");
+    if (field) field.value = "";
+    setPasswordVisible(false);
   }
 
   document.getElementById("toggle-password").addEventListener("click", () => {
     const field = document.getElementById("password");
-    const reveal = field.type === "password";
-    field.type = reveal ? "text" : "password";
-    const toggle = document.getElementById("toggle-password");
-    toggle.textContent = reveal ? "Hide" : "Show";
-    toggle.setAttribute("aria-pressed", reveal ? "true" : "false");
-    toggle.setAttribute("aria-label", reveal ? "Hide password" : "Show password");
+    setPasswordVisible(field.type === "password");
     field.focus();
   });
 

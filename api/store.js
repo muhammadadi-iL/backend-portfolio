@@ -87,6 +87,7 @@ async function request(url, options) {
       return await fetch(url, options);
     } catch (error) {
       last = error;
+      await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
     }
   }
   console.error("blob fetch failed", last && last.cause && last.cause.code);

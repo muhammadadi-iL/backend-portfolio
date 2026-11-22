@@ -630,12 +630,16 @@
     return host === "localhost" || host === "127.0.0.1" || host === "::1";
   }
   var humanKey = "adil-human";
+  var humanFor = 24 * 60 * 60 * 1000;
   var gate = document.querySelector("#captcha-gate");
   function passedBefore() {
-    try { return localStorage.getItem(humanKey) === "1"; } catch (error) { return false; }
+    try {
+      var at = Number(localStorage.getItem(humanKey));
+      return at > 0 && Date.now() - at < humanFor;
+    } catch (error) { return false; }
   }
   function markPassed() {
-    try { localStorage.setItem(humanKey, "1"); } catch (error) {}
+    try { localStorage.setItem(humanKey, String(Date.now())); } catch (error) {}
   }
   function showGate(open) {
     if (!gate) return;
@@ -668,6 +672,7 @@
         gate.dataset.ready = "1";
         window.grecaptcha.render("captcha-widget", {
           sitekey: data.siteKey,
+          theme: root.dataset.theme === "light" ? "light" : "dark",
           callback: function (token) {
             fetch("/api/captcha", {
               method: "POST",

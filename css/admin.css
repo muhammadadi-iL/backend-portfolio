@@ -47,7 +47,23 @@ body.page-admin {
   font: inherit;
 }
 
-.dash-search { width: min(24rem, 100%); }
+.dash-search-wrap { position: relative; width: min(24rem, 100%); }
+.dash-search { width: 100%; padding-inline-end: 4.4rem; border-radius: 999px; }
+.dash-clear {
+  position: absolute;
+  inset-inline-end: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+}
+.inbox-mark { width: 2.75rem; height: 2.75rem; display: block; flex: none; }
 
 .inbox-error { color: #ff8f8f; min-height: 1.4rem; margin-top: 0.7rem; }
 
@@ -161,19 +177,21 @@ body.page-admin {
 .rank-top span:first-child { overflow-wrap: anywhere; }
 .rank-top b { font-variant-numeric: tabular-nums; }
 
-.bar {
+.meter {
+  display: block;
   height: 6px;
-  margin-top: 0.35rem;
+  margin-top: 0.4rem;
+  padding: 0;
   border-radius: 99px;
   background: var(--line);
   overflow: hidden;
 }
 
-.bar i {
+.meter i {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--accent);
+  background: linear-gradient(90deg, #9a78ff, var(--accent-strong));
 }
 
 .table-wrap {
@@ -242,38 +260,79 @@ tr.is-on { background: var(--accent-soft); }
 .empty { color: var(--muted); }
 
 .gate {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: 1.5rem 1rem 2rem;
 }
 
+.gate-scene { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.gate-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(46px);
+}
+.gate-orb-a {
+  width: 30rem;
+  height: 30rem;
+  left: -8rem;
+  top: 8%;
+  background: rgba(139, 108, 255, 0.34);
+}
+.gate-orb-b {
+  width: 24rem;
+  height: 24rem;
+  right: -7rem;
+  bottom: 4%;
+  background: rgba(90, 62, 210, 0.32);
+}
+.gate-halo {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 36rem;
+  height: 36rem;
+  margin: -18rem 0 0 -18rem;
+  border-radius: 50%;
+  background: conic-gradient(from 20deg, transparent 0 62%, rgba(196, 181, 255, 0.7) 78%, transparent 90%);
+  -webkit-mask: radial-gradient(closest-side, transparent 66%, #000 68% 71%, transparent 73%);
+  mask: radial-gradient(closest-side, transparent 66%, #000 68% 71%, transparent 73%);
+}
+
 .gate-card {
+  position: relative;
+  z-index: 1;
   width: min(24.5rem, 100%);
   padding: 1.85rem 1.45rem 1.45rem;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-  box-shadow: 0 28px 70px rgba(13, 11, 28, 0.34);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  box-shadow: 0 28px 70px rgba(13, 11, 28, 0.4);
   text-align: center;
 }
 
 .gate-brand { margin-bottom: 1.15rem; }
-.gate-mark.mark { width: 4.5rem; height: 4.5rem; margin: 0 auto 0.8rem; }
-.gate-mark.mark span { font-size: 1.05rem; }
+.gate-favicon { width: 4.5rem; height: 4.5rem; margin: 0 auto 0.85rem; display: block; }
 .gate-brand .brand-name { font-size: 1.35rem; }
 .gate-brand .brand-role { display: block; margin-top: 0.35rem; }
 
-.gate h1 { font-size: 1.6rem; margin-top: 0.2rem; }
-.gate-lead { color: var(--muted); margin: 0.35rem 0 1rem; }
-
-.gate label { text-align: start; }
-
-.gate-field { position: relative; }
+.gate-field { position: relative; margin-top: 1.15rem; }
 .gate-field input {
   width: 100%;
-  padding-inline-end: 4.6rem;
+  min-height: 3.05rem;
+  padding: 0.7rem 3.1rem 0.7rem 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-raise);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  appearance: none;
 }
+.gate-field input::placeholder { color: var(--muted); }
 .gate-field input:focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -282,20 +341,25 @@ tr.is-on { background: var(--accent-soft); }
 
 .gate-reveal {
   position: absolute;
-  inset-inline-end: 0.3rem;
+  inset-inline-end: 0.4rem;
   top: 50%;
   transform: translateY(-50%);
+  width: 2.3rem;
+  height: 2.3rem;
+  display: grid;
+  place-items: center;
   border: 0;
+  border-radius: 999px;
   background: transparent;
-  color: var(--accent);
-  font: inherit;
-  font-size: 0.86rem;
-  font-weight: 500;
-  padding: 0.35rem 0.55rem;
+  color: var(--muted);
+  padding: 0;
   cursor: pointer;
 }
+.gate-reveal:hover,
+.gate-reveal[aria-pressed="true"] { color: var(--ink); }
+.gate-reveal svg { width: 1.35rem; height: 1.35rem; display: block; }
 
-.gate-submit { width: 100%; justify-content: center; margin-top: 0.2rem; }
+.gate-submit { width: 100%; justify-content: center; margin-top: 0.85rem; }
 .gate .inbox-error { text-align: start; }
 
 .inbox-brand { display: flex; align-items: center; gap: 0.8rem; }
@@ -303,6 +367,7 @@ tr.is-on { background: var(--accent-soft); }
 
 .chart { width: 100%; height: auto; display: block; overflow: visible; }
 .chart text { fill: var(--muted); font-size: 11px; font-family: var(--font-sans); }
+.chart .chart-value { fill: var(--ink); font-size: 12px; font-weight: 600; }
 .donut-total { fill: var(--ink); font-size: 18px; font-weight: 600; }
 .chart-col { fill: var(--accent); transform-box: fill-box; transform-origin: center bottom; }
 .donut-seg { stroke-linecap: butt; }
@@ -320,14 +385,17 @@ html.motion .chart-col {
   animation: dash-grow 0.7s ease;
   animation-fill-mode: backwards;
 }
-html.motion .bar i {
+html.motion .meter i {
   transform-origin: left center;
   animation: dash-grow-x 0.7s ease;
   animation-fill-mode: backwards;
 }
 html.motion .donut-seg { animation: dash-ring 0.8s ease; animation-fill-mode: backwards; }
 html.motion .gate-card { animation: dash-rise 0.55s ease; }
-html.motion .gate-mark { animation: dash-mark 0.7s ease; }
+html.motion .gate-favicon { animation: dash-mark 0.7s ease; }
+html.motion .gate-orb-a { animation: gate-drift 14s ease-in-out infinite alternate; }
+html.motion .gate-orb-b { animation: gate-drift 18s ease-in-out infinite alternate-reverse; }
+html.motion .gate-halo { animation: gate-spin 26s linear infinite; }
 html.motion body.page-admin { animation: dash-glow 18s ease-in-out infinite alternate; }
 
 @keyframes dash-rise {
@@ -348,6 +416,13 @@ html.motion body.page-admin { animation: dash-glow 18s ease-in-out infinite alte
 @keyframes dash-glow {
   from { background-position: 0% 0%; }
   to { background-position: 80% 20%; }
+}
+@keyframes gate-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(5rem, -3.5rem, 0) scale(1.08); }
+}
+@keyframes gate-spin {
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 860px) {

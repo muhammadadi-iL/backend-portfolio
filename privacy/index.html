@@ -49,9 +49,10 @@
 <body>
 <div class="captcha-gate" id="captcha-gate" hidden>
 <div class="captcha-card" role="dialog" aria-modal="true" aria-labelledby="captcha-title">
-<p class="eyebrow">First visit</p>
+<span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="mark-fill" d="M18 2H62V46L46 62H2V18Z"/><path fill="currentColor" fill-rule="evenodd" d="M18 2H62V46L46 62H2V18Z M19.08 4.6H59.4V44.92L44.92 59.4H4.6V19.08Z"/></svg><span>MA</span></span>
+<p class="eyebrow">Quick check</p>
 <h2 id="captcha-title">Confirm you are a person</h2>
-<p>This check runs once on your first visit.</p>
+<p>This runs once a day in this browser. It stays off while you move between pages.</p>
 <div id="captcha-widget"></div>
 <p class="captcha-error" hidden>That check did not pass. Try again.</p>
 </div>
@@ -91,7 +92,7 @@
 <div><dt>Visit data stored</dt><dd>IP address, approximate location, device and the pages opened. A recent log of about the last 500 views.</dd></div>
 <div><dt>Stored on your device</dt><dd>Theme, language, privacy choice and this chat session. A visitor ID only if you allow it.</dd></div>
 <div><dt>Chat</dt><dd>Name, an optional phone and email, and the messages are saved in a private log. Google Gemini writes the reply and does not receive the name, phone or email.</dd></div>
-<div><dt>Spam protection</dt><dd>Google reCAPTCHA v2 checkbox on the first visit to the hosted site.</dd></div>
+<div><dt>Spam protection</dt><dd>Google reCAPTCHA v2 checkbox, once a day in this browser on the hosted site.</dd></div>
 <div><dt>Hosting</dt><dd>Vercel (Edge Network)</dd></div>
 <div><dt>Fonts</dt><dd>IBM Plex, loaded from Google Fonts.</dd></div>
 </dl>
@@ -139,7 +140,7 @@
 </ul>
 <p>The page itself is told the region, when one is available. The IP address is not sent back to the browser, and the visit list is not published.</p>
 <h3>F. First-visit check</h3>
-<p>On a first visit to the hosted site, Google reCAPTCHA v2 shows an "I'm not a robot" checkbox. After it passes, this browser stores a local flag so the check is not shown again. The check is skipped on a local preview. Google processes it under its own privacy policy and terms.</p>
+<p>On the hosted site, Google reCAPTCHA v2 shows an "I'm not a robot" checkbox. Google's token lasts two minutes and can be checked once, so this site confirms it immediately. After it passes, this browser stores the time in a local flag named adil-human and keeps the check off for 24 hours, including while you move between pages. A new browser, a private window, or a cleared store shows it again. The check is skipped on a local preview. Google processes it under its own privacy policy and terms.</p>
 <h2 id="cookies">3. Cookies and tracking</h2>
 <p>There are no advertising cookies, no ad pixels, and no third-party analytics such as Google Analytics, Meta Pixel, Hotjar or PostHog. Visits are counted by this site, and that record stays with me.</p>
 <p>Cookies this site sets:</p>
@@ -150,13 +151,13 @@
 <li><strong>adil-id</strong>, for 180 days, only with that same choice. A random ID so a return visit is recognised.</li>
 <li><strong>adil-admin</strong>, for 12 hours, and only in the browser I use to sign in to the private reading page. It is not set for visitors.</li>
 </ul>
-<p>The browser also keeps a few values that are not cookies. Theme and language are saved in local storage when you change them, so the next page can paint the same way. After the reCAPTCHA check passes, a local flag named adil-human is saved. For the open tab, the landing page, the referring address, the region, and the name, phone and email typed in the chat sit in session storage and are dropped when the tab closes.</p>
+<p>The browser also keeps a few values that are not cookies. Theme and language are saved in local storage when you change them, so the next page can paint the same way. After the reCAPTCHA check passes, a local flag named adil-human stores the time, and the check stays off in this browser for 24 hours. For the open tab, the landing page, the referring address, the region, and the name, phone and email typed in the chat sit in session storage and are dropped when the tab closes.</p>
 <p>Necessary only deletes adil-theme, adil-lang and adil-id. To choose again later, clear this site's cookies in your browser.</p>
 <h2 id="use">4. How information is used</h2>
 <ul>
 <li>To see which pages are read, and from which sort of device and region, so I can improve the portfolio.</li>
 <li>To read the chat, including the name and any phone or email you typed, and to answer from what is written on this site.</li>
-<li>To run the first-visit check and keep the hosted site available.</li>
+<li>To run the person check once a day and keep the hosted site available.</li>
 <li>To reply when you email me or message me on WhatsApp.</li>
 </ul>
 <p>I do not sell, rent or trade this information.</p>
@@ -165,7 +166,7 @@
 <ul>
 <li><strong>Vercel.</strong> Hosts the site and the serverless functions, stores the private visit and chat logs, records its own access logs, and supplies the approximate location from the IP address.</li>
 <li><strong>Google Gemini.</strong> Writes the chat reply from the message and, when you have allowed it, the visitor note described above.</li>
-<li><strong>Google reCAPTCHA.</strong> Runs the first-visit checkbox on the hosted site.</li>
+<li><strong>Google reCAPTCHA.</strong> Runs the person check once a day on the hosted site.</li>
 <li><strong>Google Fonts.</strong> The pages load IBM Plex Sans, IBM Plex Mono and IBM Plex Sans Arabic from fonts.googleapis.com. That request is Google's.</li>
 </ul>
 <h2 id="retention">6. Data retention</h2>

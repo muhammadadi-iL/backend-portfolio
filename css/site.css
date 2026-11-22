@@ -1455,22 +1455,36 @@ html[lang="ja"] .cookie-always {
   display: grid;
   place-items: center;
   padding: 1.25rem;
-  background: color-mix(in srgb, var(--bg) 78%, transparent);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .captcha-gate[hidden] { display: none; }
 .captcha-card {
-  width: min(26rem, 100%);
-  padding: 1.45rem 1.3rem 1.3rem;
+  width: min(24.5rem, 100%);
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  padding: 1.7rem 1.35rem 1.35rem;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--bg-raise) 94%, var(--bg));
-  box-shadow: 0 24px 60px color-mix(in srgb, var(--bg) 55%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  box-shadow: 0 28px 70px rgba(13, 11, 28, 0.34);
 }
-.captcha-card h2 { margin-top: 0.35rem; font-size: 1.45rem; }
-.captcha-card p { margin-top: 0.55rem; color: var(--muted); }
-#captcha-widget { margin-top: 1.1rem; min-height: 4.8rem; }
-.captcha-error { color: var(--accent); }
+.captcha-card .mark { width: 3.4rem; height: 3.4rem; margin-bottom: 0.15rem; }
+.captcha-card .mark span { font-size: 0.82rem; }
+.captcha-card .eyebrow { margin: 0.7rem 0 0; }
+.captcha-card h2 { margin: 0.3rem 0 0; font-size: 1.55rem; letter-spacing: -0.03em; }
+.captcha-card p { margin: 0.5rem 0 0; max-width: 22rem; color: var(--muted); }
+#captcha-widget {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1.15rem;
+  min-height: 78px;
+}
+.captcha-error { color: #ff8f8f; }
+.captcha-error[hidden] { display: none; }
 
 .js-required {
   min-height: 100dvh;
