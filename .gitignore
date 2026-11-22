@@ -2,3 +2,5 @@
 .env
 .env.*
 .idea
+data/visits.jsonl
+data/chats.jsonl

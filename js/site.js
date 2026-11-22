@@ -1,5 +1,15 @@
 (function () {
   var root = document.documentElement;
+
+  function wakeMotion() {
+    if (root.classList.contains("motion")) {
+      root.classList.remove("motion");
+      void root.offsetWidth;
+    }
+    root.classList.add("motion");
+  }
+  requestAnimationFrame(function () { requestAnimationFrame(wakeMotion); });
+  window.addEventListener("pageshow", wakeMotion);
   var dictionaries = {
     ar: window.AR || {},
     fr: window.FR || {},
@@ -14,6 +24,24 @@
     ja: { code: "JA", dir: "ltr" }
   };
 
+  function matchesKey(event, name) {
+    if (String(event.key || "").toLowerCase() === name) return true;
+    return event.code === "Key" + name.toUpperCase();
+  }
+  document.addEventListener("contextmenu", function (event) {
+    event.preventDefault();
+  }, true);
+  document.addEventListener("keydown", function (event) {
+    var mod = event.ctrlKey || event.metaKey;
+    var sourceKey = event.key === "F12" || event.code === "F12" ||
+      (mod && (matchesKey(event, "u") || matchesKey(event, "s"))) ||
+      (mod && event.shiftKey && (matchesKey(event, "i") || matchesKey(event, "j") || matchesKey(event, "c") || matchesKey(event, "k"))) ||
+      (event.metaKey && event.altKey && (matchesKey(event, "u") || matchesKey(event, "i") || matchesKey(event, "j") || matchesKey(event, "c")));
+    if (!sourceKey) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+
   function currentTheme() {
     return root.dataset.theme === "light" ? "light" : "dark";
   }
@@ -25,6 +53,7 @@
       try {
         localStorage.setItem("theme", next);
       } catch (e) {}
+      rememberPrefs();
     });
   });
 
@@ -125,6 +154,7 @@
         var next = button.getAttribute("data-lang");
         try { localStorage.setItem("lang", next); } catch (e) {}
         applyLang(next);
+        rememberPrefs();
         setMenu(false);
       });
     });
@@ -257,7 +287,8 @@
         greeted = true;
         addLine(t("Ask about Muhammad's work, his stack, or how to reach him."), "from-bot");
       }
-      if (open && field) field.focus();
+      if (open && nameField && !nameField.value.trim()) nameField.focus();
+      else if (open && field) field.focus();
     }
     toggle.addEventListener("click", function () {
       setChat(panel.hidden);
@@ -271,7 +302,43 @@
     var log = chat.querySelector(".chat-log");
     var form = chat.querySelector(".chat-form");
     var field = chat.querySelector("#chat-message");
+    var nameField = chat.querySelector("#chat-name");
+    var phoneField = chat.querySelector("#chat-phone");
+    var emailField = chat.querySelector("#chat-email");
+    var errorLine = chat.querySelector("#chat-error");
     var handoff = chat.querySelector(".chat-handoff");
+    function storedContact(key) {
+      try { return sessionStorage.getItem(key) || ""; } catch (error) { return ""; }
+    }
+    if (nameField) nameField.value = storedContact("adil-chat-name");
+    if (phoneField) phoneField.value = storedContact("adil-chat-phone");
+    if (emailField) emailField.value = storedContact("adil-chat-email");
+    function showChatError(message) {
+      if (!errorLine) return;
+      errorLine.hidden = !message;
+      errorLine.textContent = message ? t(message) : "";
+    }
+    function contactReady() {
+      var person = nameField ? nameField.value.trim() : "";
+      var email = emailField ? emailField.value.trim() : "";
+      if (!person) {
+        showChatError("Add your name so Muhammad knows who wrote.");
+        if (nameField) nameField.focus();
+        return false;
+      }
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showChatError("That email address does not look right.");
+        if (emailField) emailField.focus();
+        return false;
+      }
+      showChatError("");
+      try {
+        sessionStorage.setItem("adil-chat-name", person);
+        sessionStorage.setItem("adil-chat-phone", phoneField ? phoneField.value.trim() : "");
+        sessionStorage.setItem("adil-chat-email", email);
+      } catch (error) {}
+      return true;
+    }
     var greeted = false;
     function addLine(text, kind) {
       var line = document.createElement("p");
@@ -296,7 +363,20 @@
       if (has(["msane"])) return "Msane is a B2B marketplace. One checkout becomes several factory orders, and the parts have to add up to the total.";
       if (has(["waraq"])) return "Waraq Oman is an online store. Amwal Pay marks an order paid or failed, and the customer hears about it.";
       if (has(["alejaar"])) return "Alejaar keeps buildings, units, tenants, rent and open maintenance requests in one Laravel application.";
+      if (has(["thunder"])) return "A delivery marketplace with customer, store and driver apps, and an order that moves through 13 states. The distinctive piece is ordering an item the store has not priced yet.";
+      if (has(["mosaed", "elbhos"])) return "A live platform connecting researchers with consultants, technicians and institutions. About thirteen request workflows and a course platform share one order lifecycle.";
+      if (has(["experience accelerator", "accelerator"])) return "A learning platform for leadership practice. It covers behaviour assessment, progress over time, role-based access and feedback workflows.";
+      if (has(["data aggregation", "aggregation", "scrapy"])) return "Crawlers collect product pages, an ETL pipeline loads MySQL, and Pusher and Firebase carry live updates and sign-in. Proxy rotation keeps a blocked address from stopping the run.";
+      if (has(["billing portal"])) return "An internal portal that creates Stripe payments and keeps a client's monthly bill lined up with the services they are on.";
+      if (has(["avatar"])) return "The Avatar Coach is a Laravel application. Retrieval-augmented generation pulls earlier context into the conversation. The app logs what was said, tracks goals, and produces feedback reports from that record.";
+      if (has(["business finders", "finders"])) return "A directory with search and filters, listing management for the business, and a moderation queue for the admin.";
+      if (has(["ash shop", "perfume"])) return "An Oman storefront for perfume sets: search, a cart, a wishlist, and checkout by card or cash on delivery.";
+      if (has(["ashram"])) return "The public site for United Christian Ashrams: events, blogs, podcasts, resources, and donations.";
+      if (has(["film"])) return "A film-crew listing. People find available crew, hire them, or follow a job already in progress.";
+      if (has(["unique advertisers", "advertisers"])) return "An informational site. Visitors compare packages and leave a lead.";
+      if (has(["recruit"])) return "A hiring product with Laravel on the server and React on the client.";
       if (has(["figma", "workflow", "feature pack", "how i ship", "how he ship"])) return "He cuts a Figma file and a business analysis into small feature packs. An agent implements each one under rules that stay fixed. He reviews every change.";
+      if (has(["google cloud", "google oauth", "oauth", "google"])) return "Google Cloud and Google OAuth are among the integrations on this site.";
       if (has(["skill", "stack", "laravel", "php", "mysql"])) return "PHP, Laravel and MySQL, plus REST APIs, payments, queues and tests. More than five years with them, over four of those professionally.";
       if (has(["project", "case", "built", "portfolio"])) return "The homepage case studies are VALORA, Food Link, Msane, Waraq Oman and Alejaar. The work page has the rest.";
       if (has(["thiqatech", "techigator", "olive", "company", "job history"])) return "Senior backend developer at Thiqatech, remote with a team in Muscat. Before that, Techigator and Olive Digital. Star of the Quarter at Techigator in 2024.";
@@ -309,7 +389,7 @@
       form.addEventListener("submit", function (event) {
         event.preventDefault();
         var text = field.value.trim();
-        if (!text || busy) return;
+        if (!text || busy || !contactReady()) return;
         if (!greeted) greeted = true;
         addLine(text, "from-user");
         field.value = "";
@@ -322,10 +402,22 @@
         pending.textContent = "…";
         log.appendChild(pending);
         log.scrollTop = log.scrollHeight;
+        var chatBody = {
+          messages: turns,
+          lang: root.dataset.lang || "en",
+          sessionId: ensureSession(),
+          path: location.pathname,
+          contact: {
+            name: nameField ? nameField.value.trim() : "",
+            phone: phoneField ? phoneField.value.trim() : "",
+            email: emailField ? emailField.value.trim() : ""
+          }
+        };
+        if (readCookie("adil-consent") === "all") chatBody.context = visitContext();
         fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: turns, lang: root.dataset.lang || "en" })
+          body: JSON.stringify(chatBody)
         }).then(function (response) {
           if (!response.ok) throw new Error("unavailable");
           return response.json();
@@ -378,6 +470,230 @@
     window.addEventListener("scroll", queueReveal, { passive: true });
     window.addEventListener("resize", queueReveal);
   }
+
+  function readCookie(name) {
+    var parts = document.cookie ? document.cookie.split("; ") : [];
+    for (var i = 0; i < parts.length; i++) {
+      var pair = parts[i].split("=");
+      if (pair[0] === name) return decodeURIComponent(pair.slice(1).join("="));
+    }
+    return "";
+  }
+  function writeCookie(name, value) {
+    document.cookie = name + "=" + encodeURIComponent(value) + "; Path=/; Max-Age=15552000; SameSite=Lax";
+  }
+  function clearCookie(name) {
+    document.cookie = name + "=; Path=/; Max-Age=0; SameSite=Lax";
+  }
+  function rememberPrefs() {
+    if (readCookie("adil-consent") !== "all") return;
+    writeCookie("adil-theme", currentTheme());
+    writeCookie("adil-lang", root.dataset.lang || "en");
+  }
+  var cookieBar = document.querySelector("#cookie-bar");
+  var cookieModal = document.querySelector("#cookie-modal");
+  var cookieRemember = document.querySelector("#cookie-remember");
+  if (cookieBar && !readCookie("adil-consent")) root.classList.remove("cookies-set");
+  function randomId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "v-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+  function deviceLabel() {
+    var ua = navigator.userAgent || "";
+    var kind = /iPad|Tablet/i.test(ua) ? "tablet" : /Mobi|Android|iPhone/i.test(ua) ? "phone" : "desktop";
+    var browser = /Edg\//.test(ua) ? "Edge" : /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) && !/Chrome\//.test(ua) ? "Safari" : /Firefox\//.test(ua) ? "Firefox" : "browser";
+    return kind + ", " + browser;
+  }
+  function ensureSession() {
+    var id = readCookie("adil-session");
+    if (id) return id;
+    id = randomId();
+    document.cookie = "adil-session=" + encodeURIComponent(id) + "; Path=/; SameSite=Lax";
+    return id;
+  }
+  function ensureVisitor() {
+    var id = readCookie("adil-id");
+    if (id) return id;
+    id = randomId();
+    writeCookie("adil-id", id);
+    return id;
+  }
+  function visitContext() {
+    var region = "";
+    var referrer = "";
+    var landing = "";
+    try {
+      region = sessionStorage.getItem("adil-region") || "";
+      referrer = sessionStorage.getItem("adil-referrer") || "";
+      landing = sessionStorage.getItem("adil-landing") || "";
+    } catch (error) {}
+    return {
+      visitorId: readCookie("adil-id"),
+      region: region,
+      referrer: referrer,
+      landing: landing,
+      device: deviceLabel()
+    };
+  }
+  function recordVisit() {
+    var landing = location.pathname;
+    var referrer = "direct";
+    try {
+      if (!sessionStorage.getItem("adil-landing")) sessionStorage.setItem("adil-landing", location.pathname);
+      landing = sessionStorage.getItem("adil-landing") || landing;
+      if (!sessionStorage.getItem("adil-referrer")) sessionStorage.setItem("adil-referrer", document.referrer || "direct");
+      referrer = sessionStorage.getItem("adil-referrer") || referrer;
+    } catch (error) {}
+    fetch("/api/visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        path: location.pathname,
+        device: deviceLabel(),
+        referrer: referrer,
+        landing: landing,
+        sessionId: ensureSession(),
+        visitorId: readCookie("adil-id") || ""
+      })
+    }).then(function (response) {
+      return response.ok ? response.json() : null;
+    }).then(function (data) {
+      if (data && data.region) {
+        try { sessionStorage.setItem("adil-region", data.region); } catch (error) {}
+      }
+    }).catch(function () {});
+  }
+  function applyConsent(choice) {
+    var all = choice === "all";
+    writeCookie("adil-consent", all ? "all" : "necessary");
+    if (all) {
+      rememberPrefs();
+      ensureVisitor();
+    } else {
+      clearCookie("adil-theme");
+      clearCookie("adil-lang");
+      clearCookie("adil-id");
+    }
+    root.classList.add("cookies-set");
+    root.classList.remove("cookie-open");
+    if (cookieModal) cookieModal.hidden = true;
+  }
+  function openCookieModal() {
+    if (!cookieModal) return;
+    if (cookieRemember) cookieRemember.setAttribute("aria-checked", readCookie("adil-consent") === "all" ? "true" : "false");
+    cookieModal.hidden = false;
+    root.classList.add("cookie-open");
+  }
+  if (cookieBar) {
+    cookieBar.addEventListener("click", function (event) {
+      if (event.target.closest("[data-cookie-manage]")) {
+        openCookieModal();
+        return;
+      }
+      var button = event.target.closest("[data-cookie]");
+      if (!button) return;
+      applyConsent(button.getAttribute("data-cookie") === "all" ? "all" : "necessary");
+    });
+  }
+  if (cookieModal) {
+    cookieModal.addEventListener("click", function (event) {
+      if (event.target === cookieModal || event.target.closest("[data-cookie-close]")) {
+        cookieModal.hidden = true;
+        root.classList.remove("cookie-open");
+        return;
+      }
+      if (event.target.closest(".cookie-switch")) {
+        var on = cookieRemember.getAttribute("aria-checked") === "true";
+        cookieRemember.setAttribute("aria-checked", on ? "false" : "true");
+        return;
+      }
+      var button = event.target.closest("[data-cookie]");
+      if (!button) return;
+      var kind = button.getAttribute("data-cookie");
+      if (kind === "save") kind = cookieRemember && cookieRemember.getAttribute("aria-checked") === "true" ? "all" : "necessary";
+      if (kind === "all" && cookieRemember) cookieRemember.setAttribute("aria-checked", "true");
+      if (kind === "necessary" && cookieRemember) cookieRemember.setAttribute("aria-checked", "false");
+      applyConsent(kind === "all" ? "all" : "necessary");
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !cookieModal.hidden) {
+        cookieModal.hidden = true;
+        root.classList.remove("cookie-open");
+      }
+    });
+  }
+  recordVisit();
+
+  function localSite() {
+    var host = location.hostname;
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+  }
+  var humanKey = "adil-human";
+  var gate = document.querySelector("#captcha-gate");
+  function passedBefore() {
+    try { return localStorage.getItem(humanKey) === "1"; } catch (error) { return false; }
+  }
+  function markPassed() {
+    try { localStorage.setItem(humanKey, "1"); } catch (error) {}
+  }
+  function showGate(open) {
+    if (!gate) return;
+    gate.hidden = !open;
+    Array.prototype.forEach.call(document.body.children, function (node) {
+      if (node === gate) return;
+      if (open) node.setAttribute("inert", "");
+      else node.removeAttribute("inert");
+    });
+  }
+  if (gate) {
+    gate.addEventListener("wheel", function (event) {
+      if (!gate.hidden) event.preventDefault();
+    }, { passive: false });
+    gate.addEventListener("touchmove", function (event) {
+      if (!gate.hidden) event.preventDefault();
+    }, { passive: false });
+  }
+  function setupCaptcha() {
+    if (!gate || localSite() || passedBefore()) return;
+    fetch("/api/captcha").then(function (response) {
+      if (!response.ok) throw new Error("unavailable");
+      return response.json();
+    }).then(function (data) {
+      if (!data || !data.enabled || !data.siteKey) return;
+      showGate(true);
+      var fail = gate.querySelector(".captcha-error");
+      window.adilCaptchaReady = function () {
+        if (!window.grecaptcha || gate.dataset.ready === "1") return;
+        gate.dataset.ready = "1";
+        window.grecaptcha.render("captcha-widget", {
+          sitekey: data.siteKey,
+          callback: function (token) {
+            fetch("/api/captcha", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token: token })
+            }).then(function (response) {
+              if (!response.ok) throw new Error("rejected");
+              return response.json();
+            }).then(function (result) {
+              if (!result || !result.ok) throw new Error("rejected");
+              markPassed();
+              showGate(false);
+            }).catch(function () {
+              if (fail) fail.hidden = false;
+              if (window.grecaptcha) window.grecaptcha.reset();
+            });
+          }
+        });
+      };
+      var script = document.createElement("script");
+      script.src = "https://www.google.com/recaptcha/api.js?onload=adilCaptchaReady&render=explicit";
+      script.async = true;
+      document.head.appendChild(script);
+    }).catch(function () {});
+  }
+  setupCaptcha();
 
   var dialog = document.querySelector("#cv-preview");
   if (!dialog) return;

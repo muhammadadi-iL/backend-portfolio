@@ -1,3 +1,5 @@
+const chats = require("./chats");
+
 const FACTS = `
 Muhammad Adil is a senior backend developer in Karachi, Pakistan, open to remote senior backend roles. PHP and Laravel for more than five years, over four of those professionally. On most recent projects he was the only backend developer, from an empty repository to delivery. Before that he led a backend team of up to 4 developers, reviewing code, mentoring, and owning delivery across 8 production platforms. Industries on the site: e-commerce, healthcare, pharmacy delivery, e-learning, sports booking, and service marketplaces.
 
@@ -42,8 +44,11 @@ Other work on the site:
 - Restaurants, Laravel 8, 2022–2023: multi-vendor ordering, courier app, live tracking.
 - Fat2Fit, Laravel 9, 2023: nutrition clinic, memberships, finance, per-client plans.
 - Jufrah, Laravel, 2022–2023: classifieds in seven countries, Al Rajhi Bank and Fawry payment fixes.
+- Film In Saudi, React, live at https://film-in-saudi.netlify.app. A film-crew listing. People find available crew, hire them, or follow a job already in progress.
+- Unique Advertisers, React, live at https://unique-advertisers.netlify.app. An informational site. Visitors compare packages and leave a lead.
+- Recruitment software: a hiring product with Laravel on the server and React on the client.
 
-Skills named on the site include PHP, Laravel, Livewire, REST APIs, Node.js, NestJS, Filament, Sanctum, MySQL, PostgreSQL, Redis, Stripe, PayPal, Amwal Pay, MyFatoorah, Tap, queues, Docker, Git, and tests with PHPUnit and Pest.
+Skills named on the site include PHP, Laravel, Livewire, REST APIs, Node.js, NestJS, Filament, Sanctum, MySQL, PostgreSQL, Redis, Stripe, PayPal, Amwal Pay, MyFatoorah, Tap, Google OAuth, Google Cloud, queues, Docker, Git, and tests with PHPUnit and Pest. The homepage terminal also lists google-cloud / google-oauth.
 `.trim();
 
 const LANG_NAME = { en: "English", ar: "Arabic", fr: "French", nl: "Dutch", ja: "Japanese" };
@@ -66,9 +71,20 @@ function replyText(data) {
     .trim();
 }
 
-async function askGemini(key, contents, lang) {
+function visitorNote(body) {
+  const note = body && body.context;
+  if (!note || typeof note !== "object") return "";
+  const lines = ["visitorId", "region", "referrer", "landing", "device"].map((field) => {
+    const value = String(note[field] || "").replace(/[\r\n\t]+/g, " ").trim().slice(0, 180);
+    return value ? `${field}: ${value}` : "";
+  }).filter(Boolean);
+  if (!lines.length) return "";
+  return `\n\nThis visitor allowed the site to remember them. Attached to this chat: ${lines.join("; ")}. If they ask how they found the site, you may use the referring site, landing page, device, and region. Do not mention an IP address.`;
+}
+
+async function askGemini(key, contents, lang, note) {
   const language = LANG_NAME[lang] || "English";
-  const system = `${SYSTEM}\n\nThe visitor is reading the site in ${language}. Reply in ${language}.`;
+  const system = `${SYSTEM}\n\nThe visitor is reading the site in ${language}. Reply in ${language}.${note || ""}`;
   for (const model of MODELS) {
     for (const thinking of [true, false]) {
       const generationConfig = { temperature: 0.2, maxOutputTokens: 1024 };
@@ -134,14 +150,6 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) {
-    res.statusCode = 503;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ error: "unavailable" }));
-    return;
-  }
-
   const contents = readMessages(req.body);
   const last = contents[contents.length - 1];
   if (!last || last.role !== "user") {
@@ -151,8 +159,24 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  const saved = {
+    sessionId: req.body && req.body.sessionId,
+    path: req.body && req.body.path,
+    contact: req.body && req.body.contact,
+    context: req.body && req.body.context,
+  };
+  await chats.append(Object.assign({ role: "user", text: last.parts[0].text }, saved));
+
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) {
+    res.statusCode = 503;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ error: "unavailable" }));
+    return;
+  }
+
   const lang = req.body && LANG_NAME[req.body.lang] ? req.body.lang : "en";
-  const reply = await askGemini(key, contents, lang);
+  const reply = await askGemini(key, contents, lang, visitorNote(req.body));
   if (!reply) {
     res.statusCode = 502;
     res.setHeader("Content-Type", "application/json");
@@ -160,7 +184,9 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  const text = reply.slice(0, 1200);
+  await chats.append(Object.assign({ role: "model", text: text }, saved));
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify({ reply: reply.slice(0, 1200) }));
+  res.end(JSON.stringify({ reply: text }));
 };

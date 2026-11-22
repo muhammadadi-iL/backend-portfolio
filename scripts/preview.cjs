@@ -15,7 +15,13 @@ if (fs.existsSync(envFile)) {
   }
 }
 
-const handler = require("../api/chat.js");
+const handlers = {
+  "/api/chat": require("../api/chat.js"),
+  "/api/captcha": require("../api/captcha.js"),
+  "/api/visit": require("../api/visit.js"),
+  "/api/chats": require("../api/chats.js"),
+  "/api/admin": require("../api/admin.js"),
+};
 const types = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -42,7 +48,8 @@ function sendFile(res, file) {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://127.0.0.1");
-  if (url.pathname === "/api/chat") {
+  if (handlers[url.pathname]) {
+    const handler = handlers[url.pathname];
     const chunks = [];
     let size = 0;
     req.on("data", (chunk) => {
@@ -65,7 +72,8 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ error: "bad json" }));
         return;
       }
-      Promise.resolve(handler(req, res)).catch(() => {
+      Promise.resolve(handler(req, res)).catch((error) => {
+        console.error(error && error.message, error && error.cause && error.cause.code);
         if (!res.writableEnded) {
           res.statusCode = 500;
           res.setHeader("Content-Type", "application/json");

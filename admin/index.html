@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard — Muhammad Adil</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0d0b1c">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="page-admin">
+<section class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-brand">
+      <span class="mark gate-mark" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="mark-fill" d="M18 2H62V46L46 62H2V18Z"/><path fill="currentColor" fill-rule="evenodd" d="M18 2H62V46L46 62H2V18Z M19.08 4.6H59.4V44.92L44.92 59.4H4.6V19.08Z"/></svg><span>MA</span></span>
+      <p class="brand-name">Muhammad Adil</p>
+      <p class="brand-role">Senior Backend Developer</p>
+    </div>
+    <form id="login">
+      <p class="eyebrow">Private</p>
+      <h1>Sign in</h1>
+      <p class="gate-lead">Visits, IP addresses, locations and saved chats.</p>
+      <label for="password">Password</label>
+      <div class="gate-field">
+        <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="200">
+        <button class="gate-reveal" id="toggle-password" type="button" aria-pressed="false" aria-label="Show password">Show</button>
+      </div>
+      <p class="inbox-error" id="login-error" role="alert"></p>
+      <button class="btn btn-primary gate-submit" type="submit">Sign in</button>
+    </form>
+    <p id="unavailable" hidden>This page is not available.</p>
+  </div>
+</section>
+<main class="inbox" id="app" hidden>
+  <div class="inbox-top">
+    <div class="inbox-brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="mark-fill" d="M18 2H62V46L46 62H2V18Z"/><path fill="currentColor" fill-rule="evenodd" d="M18 2H62V46L46 62H2V18Z M19.08 4.6H59.4V44.92L44.92 59.4H4.6V19.08Z"/></svg><span>MA</span></span>
+      <div>
+        <p class="eyebrow">Private</p>
+        <h1>Dashboard</h1>
+        <p id="inbox-lead">Visits, IP addresses, locations and saved chats.</p>
+      </div>
+    </div>
+    <div class="inbox-actions">
+      <button class="btn" id="refresh" type="button" hidden>Refresh</button>
+      <button class="btn" id="signout" type="button" hidden>Sign out</button>
+    </div>
+  </div>
+  <div class="dash" id="board" hidden>
+    <nav class="dash-nav" aria-label="Dashboard">
+      <button type="button" data-view="overview">Overview</button>
+      <button type="button" data-view="visits">Visits</button>
+      <button type="button" data-view="ips">IP addresses</button>
+      <button type="button" data-view="locations">Locations</button>
+      <button type="button" data-view="chats">Chats</button>
+    </nav>
+    <div>
+      <div class="dash-tools">
+        <input class="dash-search" id="dash-search" type="search" placeholder="Search page, IP, location, name, email" autocomplete="off">
+        <p class="dash-count" id="dash-count"></p>
+      </div>
+      <div id="dash-view"></div>
+    </div>
+  </div>
+</main>
+<noscript><p class="inbox">JavaScript is required to open this page.</p></noscript>
+<script src="/js/admin.js"></script>
+</body>
+</html>
